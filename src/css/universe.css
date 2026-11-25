@@ -227,10 +227,25 @@
 }
 
 /* Config-driven Circular Media Transport Controls inside Bottom Beat Deck */
+.beat-deck {
+  gap: 9px;
+  padding: 6px 11px;
+  min-width: 340px;
+}
+
+.beat-deck .beat-viz {
+  width: 72px;
+  height: 26px;
+}
+
+.beat-deck .beat-info {
+  min-width: 120px;
+}
+
 .beat-transport {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   --beat-accent: #6b5ce7;
   --beat-accent-bright: #7f72ff;
 }
