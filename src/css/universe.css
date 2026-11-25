@@ -352,6 +352,46 @@
   color: #fca5a5;
 }
 
+.chat-msg {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  user-select: text;
+}
+
+.chat-msg pre {
+  margin: 6px 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(237, 227, 218, 0.25);
+  overflow-x: auto;
+  font-size: 11px;
+}
+
+.chat-msg code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1px 4px;
+  font-size: 11px;
+}
+
+.chat-msg pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.chat-form {
+  align-items: flex-end;
+}
+
+.chat-form button {
+  min-height: 36px;
+}
+
+.chat-form button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .chat-msg-actions {
   display: flex;
   gap: 6px;

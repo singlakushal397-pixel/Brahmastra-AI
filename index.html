@@ -643,7 +643,7 @@
         <li><strong>Server-Side OpenAI Processing:</strong> Your OpenAI API key is stored strictly on the backend server via <code>OPENAI_API_KEY</code> and is never sent to browser JavaScript.</li>
         <li><strong>Transport & Processing Disclosure:</strong> Messages are sent to the backend and forwarded to OpenAI to generate character replies. Because the AI model must read your prompt to respond, chats are encrypted in transit (HTTPS/TLS in production) rather than end-to-end encrypted away from the AI provider.</li>
         <li><strong>Isolated Character Memory:</strong> Each character keeps its own separate session history. Switching from Kelly to Chrono never shares context.</li>
-        <li><strong>Minimal Retention:</strong> Server memory expires automatically and message contents are not logged. Browser history saving is off unless you enable opt-in storage, and you can delete all data anytime.</li>
+        <li><strong>Minimal Retention & Encryption at Rest:</strong> Conversation context is stored encrypted at rest (Fernet AES+HMAC, 24h TTL) on the backend and message contents are never logged in plaintext. Browser history saving is opt-in, and you can clear or delete all data anytime.</li>
       </ul>
     </div>
   </div>

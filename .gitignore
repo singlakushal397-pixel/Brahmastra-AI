@@ -1,4 +1,6 @@
 .env
+.sessions/
+.local_session.key
 __pycache__/
 *.pyc
 .DS_Store
