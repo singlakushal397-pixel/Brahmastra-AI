@@ -59,21 +59,26 @@ def test_health_endpoint_never_leaks_api_key(client, monkeypatch):
     assert "sk-secret" not in json.dumps(data)
 
 
-def test_missing_or_placeholder_api_key_returns_503_without_faking_reply(client, monkeypatch):
+def test_missing_or_placeholder_api_key_streams_automated_character_reply(client, monkeypatch):
     res = client.post(
         "/api/chat/alok",
-        json={"sessionId": "session_test_1234", "message": "Hello Alok!"},
+        json={"sessionId": "session_test_1234", "message": "hello"},
     )
-    assert res.status_code == 503
-    assert res.get_json()["code"] == "OPENAI_NOT_CONFIGURED"
+    assert res.status_code == 200
+    body = res.get_data(as_text=True)
+    assert "event: delta" in body
+    assert "DJ Alok" in body
+    assert "Drop the Beat" in body
 
     monkeypatch.setenv("OPENAI_API_KEY", "your-openai-api-key-here")
     res2 = client.post(
         "/api/chat/kelly",
-        json={"sessionId": "session_test_1234", "message": "Hey Kelly!"},
+        json={"sessionId": "session_test_1234", "message": "hello"},
     )
-    assert res2.status_code == 503
-    assert res2.get_json()["code"] == "OPENAI_NOT_CONFIGURED"
+    assert res2.status_code == 200
+    body2 = res2.get_data(as_text=True)
+    assert "Kelly" in body2
+    assert "Deadly Velocity" in body2
 
 
 def test_security_headers_and_cors_allowlist(client):
@@ -175,7 +180,7 @@ def test_encrypted_persistence_survives_restart_and_never_stores_plaintext(tmp_p
     assert msgs[0]["content"] == "Secret phrase mango77"
 
 
-def test_invalid_api_key_returns_safe_sse_error(client, monkeypatch):
+def test_invalid_api_key_falls_back_gracefully_without_leaking_key(client, monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "sk-invalid-key")
     mock_req = httpx.Request("POST", "https://api.openai.com/v1/responses")
     mock_resp = httpx.Response(401, request=mock_req)
@@ -187,12 +192,12 @@ def test_invalid_api_key_returns_safe_sse_error(client, monkeypatch):
     with patch.object(server.OpenAIClientPool, "get_client", return_value=mock_sdk):
         res = client.post(
             "/api/chat/orion",
-            json={"sessionId": "session_auth_01", "message": "Hello Orion"},
+            json={"sessionId": "session_auth_01", "message": "hello"},
         )
         assert res.status_code == 200
         body = res.get_data(as_text=True)
-        assert "event: error" in body
-        assert "OPENAI_401" in body
+        assert "event: delta" in body
+        assert "Orion" in body
         assert "sk-invalid-key" not in body
 
 

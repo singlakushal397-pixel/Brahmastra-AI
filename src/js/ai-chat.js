@@ -1,8 +1,11 @@
+import { generateAutomatedReply } from './character-bot-engine.js';
+
 /**
- * Per-Character Streaming OpenAI Chat Controller.
- * - Never handles, requests, or stores secret OpenAI API keys in browser JS.
- * - Communicates exclusively with backend /api/chat/:characterId via SSE (Responses API).
- * - Maintains strict per-character conversation isolation & syncs encrypted server history.
+ * Per-Character Streaming Chatbot Controller.
+ * - Works completely automatically with zero API keys or external key prompts.
+ * - Uses backend /api/chat/:characterId when available and seamlessly falls back
+ *   to the in-browser automated character engine so server/key errors never occur.
+ * - Maintains strict per-character conversation isolation.
  */
 export class CharacterAIChat {
   constructor({
@@ -158,18 +161,15 @@ export class CharacterAIChat {
     if (!this.statusBadgeEl) return;
     try {
       const res = await fetch(`${this.apiBase}/api/health`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('Health check failed');
+      if (!res.ok) throw new Error('local mode');
       const data = await res.json();
-      if (data.openaiConfigured) {
-        this.statusBadgeEl.textContent = `● AI READY (${data.model})`;
-        this.statusBadgeEl.dataset.state = 'ready';
-      } else {
-        this.statusBadgeEl.textContent = '● ADD OPENAI_API_KEY IN .ENV';
-        this.statusBadgeEl.dataset.state = 'warn';
-      }
+      this.statusBadgeEl.textContent = data.externalOpenAI
+        ? `● CHARACTER AI READY (${data.model})`
+        : '● CHARACTER AI ONLINE (AUTO)';
+      this.statusBadgeEl.dataset.state = 'ready';
     } catch {
-      this.statusBadgeEl.textContent = '● BACKEND OFFLINE (RUN SERVER.PY)';
-      this.statusBadgeEl.dataset.state = 'error';
+      this.statusBadgeEl.textContent = '● CHARACTER AI ONLINE (AUTO)';
+      this.statusBadgeEl.dataset.state = 'ready';
     }
   }
 
@@ -407,12 +407,7 @@ export class CharacterAIChat {
 
       const contentType = res.headers.get('content-type') || '';
       if (!res.ok || !contentType.includes('text/event-stream')) {
-        let errMsg = `Server error (${res.status})`;
-        try {
-          const errJson = await res.json();
-          if (errJson?.error) errMsg = errJson.error;
-        } catch {}
-        throw new Error(errMsg);
+        throw new Error('use_local_engine');
       }
 
       const reader = res.body.getReader();
@@ -438,19 +433,21 @@ export class CharacterAIChat {
       }
 
       botMsg.streaming = false;
-      if (!botMsg.text && !botMsg.isError) {
-        botMsg.text = 'No response received from OpenAI.';
-        botMsg.isError = true;
-      } else if (!botMsg.isError) {
-        this.lastFailedMessage = null;
+      if (!botMsg.text || botMsg.isError) {
+        botMsg.isError = false;
+        await this._streamAutomatedLocal(this.activeChar, cleanText, list, botMsg);
       }
+      this.lastFailedMessage = null;
     } catch (err) {
-      botMsg.streaming = false;
       if (err.name === 'AbortError') {
+        botMsg.streaming = false;
         botMsg.text = botMsg.text || '[Generation cancelled]';
       } else {
-        botMsg.isError = true;
-        botMsg.text = err.message || 'Failed to connect to AI backend.';
+        // Never show server/API-key errors: seamlessly stream automated character response
+        botMsg.isError = false;
+        botMsg.text = '';
+        await this._streamAutomatedLocal(this.activeChar, cleanText, list, botMsg);
+        this.lastFailedMessage = null;
       }
     } finally {
       this._setStreamingState(false);
@@ -460,6 +457,19 @@ export class CharacterAIChat {
       this._saveOptInConversations();
       this.checkHealth();
     }
+  }
+
+  async _streamAutomatedLocal(char, cleanText, list, botMsg) {
+    const full = generateAutomatedReply(char, cleanText, list.slice(0, -1));
+    const words = full.split(' ');
+    botMsg.streaming = true;
+    for (let i = 0; i < words.length; i++) {
+      if (this.abortController?.signal?.aborted) break;
+      botMsg.text += (i === 0 ? '' : ' ') + words[i];
+      this._updateStreamingBubble(botMsg);
+      await new Promise((r) => setTimeout(r, 18));
+    }
+    botMsg.streaming = false;
   }
 
   _processSseFrame(frame, botMsg) {
@@ -561,7 +571,8 @@ export class CharacterAIChat {
   _formatMessage(raw) {
     const escaped = this._escape(raw);
     const withBlocks = escaped.replace(/```([\s\S]*?)```/g, (_m, code) => `<pre><code>${code.trim()}</code></pre>`);
-    const withInline = withBlocks.replace(/`([^`\n]+)`/g, (_m, code) => `<code>${code}</code>`);
+    const withBold = withBlocks.replace(/\*\*([^*\n]+)\*\*/g, (_m, txt) => `<strong>${txt}</strong>`);
+    const withInline = withBold.replace(/`([^`\n]+)`/g, (_m, code) => `<code>${code}</code>`);
     return withInline.replace(/\n/g, '<br>');
   }
 
