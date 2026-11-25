@@ -512,6 +512,7 @@
 
     <!-- 9. Operator Quick Dock -->
     <div class="op-dock" id="opDock"></div>
+    <audio id="bgBeatAudio" src="./audio/Final beat.mp3" autoplay loop preload="auto" playsinline></audio>
   </main>
 
   <!-- 11. 3D Character Vault & AI Chat Modal -->
@@ -722,7 +723,7 @@
     // 2. BACKGROUND BEAT PLAYER + WEB AUDIO ANALYSER (FINAL BEAT.MP3)
     // =========================================================================
     let beatBass = 0;
-    const beatController = initBackgroundBeat('./audio/Final beat.mp3');
+    const beatController = initBackgroundBeat(document.getElementById('bgBeatAudio'));
 
     function updateBeatVisualizer() {
       beatBass = beatController.updateFrame();

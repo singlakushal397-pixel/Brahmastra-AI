@@ -1,102 +1,118 @@
 /**
- * Background Beat Player & Web Audio Beat Synchronizer.
- * Plays ./audio/Final beat.mp3 from 0:00 on every page open/refresh
- * with no UI buttons or pause controls, driving real-time beatBass
- * synchronization for the 3D Ember Core and 3D characters.
+ * Direct Background Beat Player & Web Audio Beat Synchronizer.
+ * Uses the embedded <audio id="bgBeatAudio" src="./audio/Final beat.mp3"> element
+ * directly on load from 0:00 on every refresh, without routing into AudioContext
+ * until AudioContext is actively running so suspended-context silence never occurs.
  */
 
-export function initBackgroundBeat(trackSrc = './audio/Final beat.mp3') {
-  const audio = new Audio(encodeURI(trackSrc));
+export function initBackgroundBeat(audioOrPath = './audio/Final beat.mp3') {
+  const audio =
+    typeof audioOrPath === 'string'
+      ? new Audio(encodeURI(audioOrPath))
+      : audioOrPath;
+
   audio.loop = true;
   audio.preload = 'auto';
-  audio.crossOrigin = 'anonymous';
-  audio.currentTime = 0;
+  audio.muted = false;
+  audio.volume = 1.0;
+  try {
+    audio.currentTime = 0;
+  } catch {}
 
   let audioCtx = null;
   let analyser = null;
   let freqData = null;
   let mediaConnected = false;
   let beatBass = 0;
-  let unlocked = false;
 
-  function ensureAudioGraph() {
-    if (!audioCtx) {
+  function connectAnalyserWhenRunning() {
+    if (mediaConnected) return;
+    try {
       const Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;
-      audioCtx = new Ctx();
+      if (!audioCtx) {
+        audioCtx = new Ctx();
+      }
+      if (audioCtx.state !== 'running') return;
       analyser = audioCtx.createAnalyser();
       analyser.fftSize = 64;
       freqData = new Uint8Array(analyser.frequencyBinCount);
-      analyser.connect(audioCtx.destination);
-    }
-    if (!mediaConnected && audioCtx) {
       const src = audioCtx.createMediaElementSource(audio);
       src.connect(analyser);
+      analyser.connect(audioCtx.destination);
       mediaConnected = true;
+    } catch {
+      // Keep native <audio> playback running even if Web Audio graph fails
     }
   }
 
-  async function startUnmutedFromBeginning() {
-    ensureAudioGraph();
-    if (audioCtx && audioCtx.state === 'suspended') {
-      await audioCtx.resume().catch(() => {});
-    }
-    audio.muted = false;
+  async function tryImmediateAutoplay() {
     try {
       await audio.play();
-      unlocked = true;
+      // Try attaching Web Audio analyser only if AudioContext is already allowed to run
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) {
+        audioCtx = audioCtx || new Ctx();
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume().catch(() => {});
+        }
+        if (audioCtx.state === 'running') {
+          connectAnalyserWhenRunning();
+        }
+      }
       return true;
     } catch {
       return false;
     }
   }
 
-  // Attempt immediate unmuted playback from 0:00 on load/refresh
-  startUnmutedFromBeginning().then(async (ok) => {
-    if (ok) return;
-    // If browser autoplay policy requires a user gesture for unmuted sound,
-    // start muted silently so timeline begins at 0:00 and unmute on first touch/scroll/key.
-    try {
-      audio.muted = true;
-      await audio.play();
-    } catch {}
+  const removeUnlockListeners = () => {
+    window.removeEventListener('pointerdown', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+    window.removeEventListener('click', unlockAudio);
+    window.removeEventListener('keydown', unlockAudio);
+  };
 
-    const unlock = async () => {
-      if (unlocked) return;
-      ensureAudioGraph();
-      if (audioCtx && audioCtx.state === 'suspended') {
-        await audioCtx.resume().catch(() => {});
-      }
-      audio.muted = false;
-      if (audio.paused) {
+  async function unlockAudio() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx && !audioCtx) {
+      audioCtx = new Ctx();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      await audioCtx.resume().catch(() => {});
+    }
+    connectAnalyserWhenRunning();
+    audio.muted = false;
+    if (audio.paused) {
+      try {
         audio.currentTime = 0;
-        await audio.play().catch(() => {});
-      }
-      unlocked = !audio.paused && !audio.muted;
-      if (unlocked) {
-        window.removeEventListener('pointerdown', unlock);
-        window.removeEventListener('touchstart', unlock);
-        window.removeEventListener('keydown', unlock);
-        window.removeEventListener('wheel', unlock);
-      }
-    };
+      } catch {}
+      await audio.play().catch(() => {});
+    }
+    if (!audio.paused && !audio.muted) {
+      removeUnlockListeners();
+    }
+  }
 
-    window.addEventListener('pointerdown', unlock, { passive: true });
-    window.addEventListener('touchstart', unlock, { passive: true });
-    window.addEventListener('keydown', unlock, { passive: true });
-    window.addEventListener('wheel', unlock, { passive: true });
+  // Attempt immediate playback from 0:00 on page open / refresh
+  tryImmediateAutoplay().then((started) => {
+    if (!started || !mediaConnected) {
+      window.addEventListener('pointerdown', unlockAudio, { passive: true });
+      window.addEventListener('touchstart', unlockAudio, { passive: true });
+      window.addEventListener('click', unlockAudio, { passive: true });
+      window.addEventListener('keydown', unlockAudio, { passive: true });
+    }
   });
 
   function updateFrame() {
-    if (analyser && !audio.paused && !audio.muted && audioCtx?.state === 'running') {
+    if (mediaConnected && analyser && !audio.paused && audioCtx?.state === 'running') {
       analyser.getByteFrequencyData(freqData);
       let bassSum = 0;
       for (let i = 0; i < 4; i++) bassSum += freqData[i];
       beatBass = bassSum / (4 * 255);
     } else if (!audio.paused) {
-      // Gentle rhythmic fallback while browser waits for first gesture to unmute
-      const t = performance.now() / 1000;
-      beatBass = Math.pow(Math.max(0, Math.sin(t * Math.PI * 2.1)), 4) * 0.35;
+      const t = audio.currentTime || performance.now() / 1000;
+      beatBass = Math.pow(Math.max(0, Math.sin(t * Math.PI * 2.1)), 4) * 0.42;
     } else {
       beatBass *= 0.9;
     }
