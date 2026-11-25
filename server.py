@@ -23,6 +23,7 @@ import time
 import uuid
 from collections import defaultdict, deque
 from datetime import datetime, timezone
+from urllib.parse import unquote
 from pathlib import Path
 from typing import Any
 
@@ -904,6 +905,7 @@ def create_app(
 
     @app.get("/<path:rel_path>")
     def serve_static(rel_path: str) -> tuple[Response, int] | Response:
+        rel_path = unquote(rel_path)
         clean_parts = Path(rel_path).parts
         if not clean_parts or clean_parts[0] not in ALLOWED_STATIC_TOP_LEVEL:
             return jsonify({"error": "Not found"}), 404
