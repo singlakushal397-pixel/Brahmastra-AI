@@ -72,7 +72,12 @@ DEFAULT_ALLOWED_ORIGINS = {
 def get_allowed_origins() -> set[str]:
     raw = os.environ.get("CORS_ALLOWED_ORIGINS", "")
     parsed = {item.strip().rstrip("/") for item in raw.split(",") if item.strip()}
-    return parsed or DEFAULT_ALLOWED_ORIGINS
+    origins = parsed or set(DEFAULT_ALLOWED_ORIGINS)
+    for env_key in ("VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL"):
+        val = os.environ.get(env_key, "").strip()
+        if val:
+            origins.add(f"https://{val.removeprefix('https://').removeprefix('http://').rstrip('/')}")
+    return origins
 
 
 ALLOWED_STATIC_TOP_LEVEL = {"index.html", "src", "characters", "models", "audio"}
@@ -365,6 +370,7 @@ def create_app(catalog: CharacterCatalog | None = None) -> Flask:
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        scheme = "https" if request.is_secure or request.headers.get("X-Forwarded-Proto") == "https" else "http"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
@@ -372,7 +378,7 @@ def create_app(catalog: CharacterCatalog | None = None) -> Flask:
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: blob: https://images.higgs.ai; "
             "media-src 'self' blob:; "
-            f"connect-src 'self' blob: http://{request.host} http://127.0.0.1:8080 http://localhost:8080 https://cdn.jsdelivr.net https://images.higgs.ai; "
+            f"connect-src 'self' blob: {scheme}://{request.host} http://127.0.0.1:8080 http://localhost:8080 https://cdn.jsdelivr.net https://images.higgs.ai; "
             "frame-ancestors 'none';"
         )
         if request.path.startswith("/api/"):
