@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Embers Foundry × Free Fire — 3D Character Vault & AI Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    @font-face {
+      font-family: "Archivo Wide";
+      src: url("https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdnoLg.woff2") format("woff2");
+      font-weight: 300 600;
+      font-stretch: 62% 125%;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Onest";
+      src: url("https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmf-HY.woff2") format("woff2");
+      font-weight: 400 500;
+      font-display: swap;
+    }
+
+    :root {
+      --deep: #121110;
+      --dark: #1F1815;
+      --accent: #5D3827;
+      --soft: #C5794B;
+      --light: #EDE3DA;
+      --ff-orange: #FF6B00;
+      --ff-gold: #FFD000;
+      --u: min(calc(100vw / 1440), calc(100vh / 810));
+      --s: calc(100vw / 1440);
+      --mb: 0px;
+      --ease-out: cubic-bezier(.16,1,.3,1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%; overflow: hidden; background: var(--deep); color: var(--light);
+      font-family: "Onest", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none; user-select: none;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; color: inherit; cursor: pointer; }
+
+    /* ALGERIAN DISPLAY TYPOGRAPHY */
+    .algerian {
+      font-family: "Algerian", "Cinzel Decorative", Georgia, serif;
+      letter-spacing: 0.04em;
+      text-shadow: 3px 3px 0 #000, -1px -1px 0 var(--accent);
+    }
+
+    /* MAIN STAGE */
+    .stage { position: fixed; inset: 0; overflow: hidden; background: var(--deep); }
+    .stage.pre .nav-links,
+    .stage.pre .menu-btn,
+    .stage.pre .fg,
+    .stage.pre .glyphs,
+    .stage.pre .h1,
+    .stage.pre .beat-deck,
+    .stage.pre .op-dock { opacity: 0; }
+    .stage.pre .plate-h1 { transform: scale(1.3); }
+
+    .plate {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center; transform-origin: center;
+    }
+    .plate-s2 { opacity: 0; }
+    .cam {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: 0; pointer-events: none;
+    }
+    .stage.cam-on .cam { opacity: 1; }
+
+    /* THREE.JS AMBIENT EMBER CANVAS */
+    #bg3d {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 2; mix-blend-mode: screen;
+    }
+
+    .shade {
+      position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      background: linear-gradient(180deg,
+        rgba(18,17,16,.72) 0%,
+        rgba(18,17,16,.18) 22%,
+        rgba(18,17,16,0) 40%,
+        rgba(18,17,16,0) 75%,
+        rgba(18,17,16,.42) 100%);
+    }
+
+    /* FOREGROUND WORD & MOUNDS */
+    .fg {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: calc(810 * var(--s)); overflow: hidden; pointer-events: none; z-index: 3;
+    }
+    .word {
+      position: absolute; left: calc(-44 * var(--s)); top: calc(452 * var(--s));
+      font-family: "Archivo Wide", sans-serif; font-stretch: 125%; font-weight: 600;
+      font-size: calc(340.6 * var(--s)); line-height: 1; letter-spacing: -.035em;
+      color: var(--light); white-space: nowrap;
+    }
+    .word > span { display: inline-block; transform: scaleX(1.05); transform-origin: top left; }
+    .word i { display: inline-block; font-style: normal; }
+    .mounds {
+      position: absolute; left: 0; bottom: 0; width: 100%;
+      height: calc(810 * var(--s) * 0.64 + var(--mb)); object-fit: fill;
+    }
+    .mound-l { clip-path: inset(0 50% 0 0); }
+    .mound-r { clip-path: inset(0 0 0 50%); }
+
+    /* NAV (BRUTALIST ENHANCED) */
+    header.nav {
+      position: absolute; top: 0; left: 0; right: 0; height: calc(86 * var(--u));
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 calc(30 * var(--u)) 0 calc(26 * var(--u)); z-index: 10;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo svg { width: max(40px, calc(52 * var(--u))); height: auto; }
+    .logo-tag {
+      background: var(--ff-orange); color: #000; border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000; padding: 3px 8px; font-size: 11px;
+      font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+
+    .nav-links {
+      position: absolute; left: calc(410 * var(--u)); top: 50%; transform: translateY(-50%);
+      display: flex; gap: calc(56 * var(--u)); list-style: none;
+    }
+    .nav-links li { overflow: hidden; }
+    .nav-links a {
+      display: inline-block; padding: 6px 10px; line-height: 14px;
+      font-size: max(11px, calc(12.5 * var(--u))); font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase; opacity: .94;
+      border: 1.5px solid transparent; transition: all .2s;
+    }
+    .nav-links a:hover {
+      background: var(--light); color: #000; border-color: #000;
+      box-shadow: 3px 3px 0 var(--ff-orange); opacity: 1;
+    }
+
+    .menu-btn {
+      width: max(36px, calc(42 * var(--u))); height: max(36px, calc(34 * var(--u)));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: max(6px, calc(8 * var(--u))); background: var(--dark);
+      border: 2px solid var(--light); box-shadow: 4px 4px 0 #000;
+    }
+    .menu-btn span { display: block; width: 64%; height: 2px; background: var(--light); }
+    .menu-btn:hover { background: var(--ff-orange); border-color: #000; }
+    .menu-btn:hover span { background: #000; }
+
+    /* GLYPH COLUMN */
+    .glyphs {
+      position: absolute; left: calc(32 * var(--u)); top: calc(211 * var(--u));
+      display: flex; flex-direction: column; gap: calc(13.8 * var(--u)); z-index: 5;
+    }
+    .glyphs svg { width: max(11px, calc(17 * var(--u))); height: auto; color: rgba(237,227,218,.8); }
+
+    /* HERO SECTION (STATE 1) */
+    section.h1 { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+    section.h1 > * { pointer-events: auto; }
+    .h1-title {
+      position: absolute; left: calc(38 * var(--u)); top: calc(93 * var(--u));
+      overflow: hidden; padding-bottom: .08em;
+      font-size: calc(44 * var(--u)); line-height: 1.15; white-space: nowrap;
+      text-transform: uppercase; color: var(--light);
+    }
+    .h1-title > span { display: block; }
+    .h1-body {
+      position: absolute; left: calc(1190 * var(--u)); top: calc(99 * var(--u));
+      width: calc(214 * var(--u)); overflow: hidden;
+      font-size: max(11px, calc(12.6 * var(--u))); line-height: 1.38;
+      color: rgba(237,227,218,.9); background: rgba(18,17,16,.75);
+      border: 2px solid var(--soft); box-shadow: 4px 4px 0 #000; padding: 10px 12px;
+    }
+    .h1-body > span { display: block; }
+
+    .video-card {
+      position: absolute; left: calc(92 * var(--u)); top: calc(206 * var(--u));
+      width: calc(174 * var(--u)); height: calc(118 * var(--u));
+      border: 2.5px solid var(--light); box-shadow: 5px 5px 0 #000;
+      background-color: var(--dark);
+      background-image: url("https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061140_b66e0e91-d128-4f2f-9076-3a6fee12924e.png&w=1024&q=85");
+      background-size: 200% 200%; background-position: 100% 100%;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .video-card::before { content: ""; position: absolute; inset: 0; background: rgba(18,17,16,.24); }
+    .video-card svg { position: relative; z-index: 1; width: max(18px, calc(28 * var(--u))); }
+    .video-card-tag {
+      position: absolute; bottom: 0; left: 0; right: 0; background: #000; color: var(--ff-gold);
+      font-size: 9px; font-weight: 800; letter-spacing: .1em; text-align: center; padding: 2px 0;
+    }
+
+    .captions {
+      position: absolute; left: 0; right: 0; bottom: calc(14 * var(--u)); height: calc(40 * var(--u));
+    }
+    .cap { position: absolute; bottom: 0; overflow: hidden; }
+    .cap-1 { left: calc(37 * var(--u)); }
+    .cap-2 { left: calc(411 * var(--u)); }
+    .cap-3 { left: calc(786 * var(--u)); }
+    .cap-4 { left: calc(1173 * var(--u)); }
+    .mi { display: flex; align-items: center; gap: calc(14 * var(--u)); }
+    .cap-num {
+      font-family: "Archivo Wide", sans-serif; font-stretch: 104%; font-weight: 300;
+      font-size: calc(33.3 * var(--u)); line-height: 1;
+    }
+    .cap-txt {
+      border-left: 2px solid var(--ff-orange); padding-left: calc(12 * var(--u));
+      font-size: max(11px, calc(11.6 * var(--u))); line-height: 1.3; color: rgba(237,227,218,.88);
+    }
+
+    /* SECTION 2 (CHARACTER VAULT GALLERY) */
+    section.s2 { position: absolute; inset: 0; pointer-events: none; z-index: 7; }
+    section.s2.active { pointer-events: auto; }
+    .s2-ui { opacity: 0; transition: opacity .6s var(--ease-out); }
+    section.s2.active .s2-ui { opacity: 1; }
+
+    .s2-title {
+      position: absolute; left: calc(74 * var(--u)); top: calc(112 * var(--u));
+      font-size: calc(38 * var(--u)); line-height: 1.12; text-transform: uppercase;
+    }
+    .s2-body {
+      position: absolute; left: calc(74 * var(--u)); top: calc(272 * var(--u));
+      width: calc(270 * var(--u)); font-size: max(11px, calc(13.5 * var(--u)));
+      line-height: 1.5; color: rgba(237,227,218,.9);
+      background: rgba(18,17,16,.84); border: 2px solid var(--light);
+      box-shadow: 5px 5px 0 #000; padding: 14px;
+    }
+    .s2-cta {
+      position: absolute; left: calc(74 * var(--u)); top: calc(474 * var(--u));
+      background: var(--ff-orange); color: #000; border: 2.5px solid #000;
+      box-shadow: 5px 5px 0 #000; padding: 10px 18px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: .08em; font-size: 12px;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .s2-cta:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 #000; }
+
+    .cards-grid {
+      position: absolute; left: calc(460 * var(--u)); top: calc(130 * var(--u));
+      right: calc(44 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: calc(18 * var(--u));
+    }
+    .char-card {
+      position: relative; height: calc(248 * var(--u)); background: var(--dark);
+      border: 2.5px solid var(--light); box-shadow: 6px 6px 0 #000;
+      overflow: hidden; cursor: pointer; transition: transform .15s, box-shadow .15s;
+    }
+    .char-card:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 var(--ff-orange); }
+    .char-card-bg {
+      position: absolute; inset: 0;
+      background-image: url("https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061140_b66e0e91-d128-4f2f-9076-3a6fee12924e.png&w=1024&q=85");
+      background-size: 200% 200%; transition: transform .9s var(--ease-out); opacity: .55;
+    }
+    .char-card:hover .char-card-bg { transform: scale(1.06); }
+    .char-card::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(18,17,16,.1) 0%, rgba(18,17,16,.92) 100%);
+    }
+    .char-card-inner {
+      position: relative; z-index: 2; height: 100%; padding: 14px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .char-badge {
+      display: inline-flex; align-items: center; justify-content: space-between;
+      font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .char-pill {
+      background: #000; color: var(--ff-gold); border: 1.5px solid var(--ff-gold);
+      padding: 2px 7px;
+    }
+    .char-name { font-size: calc(24 * var(--u)); line-height: 1.05; margin-bottom: 4px; }
+    .char-skill { font-size: 11px; color: var(--soft); font-weight: 700; text-transform: uppercase; }
+    .char-open-tag {
+      margin-top: 8px; display: inline-block; background: var(--light); color: #000;
+      padding: 4px 9px; font-size: 10px; font-weight: 900; letter-spacing: .08em;
+      text-transform: uppercase; border: 1.5px solid #000;
+    }
+
+    /* NEO-BRUTALIST BEAT DECK HUD */
+    .beat-deck {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 30; display: flex; align-items: center; gap: 12px;
+      background: #121110; border: 2.5px solid var(--light); box-shadow: 6px 6px 0 #000;
+      padding: 8px 14px; min-width: 390px;
+    }
+    .beat-btn {
+      background: var(--ff-orange); color: #000; border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000; padding: 6px 12px; font-size: 11px;
+      font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .beat-btn.playing { background: var(--ff-gold); }
+    .beat-viz { width: 110px; height: 28px; background: #000; border: 1.5px solid var(--accent); }
+    .beat-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .beat-title { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ff-gold); }
+    .beat-bar { width: 100%; height: 6px; background: #2a211d; border: 1px solid var(--light); cursor: pointer; }
+    .beat-fill { height: 100%; width: 0%; background: var(--ff-orange); }
+    .beat-led {
+      width: 10px; height: 10px; background: #333; border: 1.5px solid var(--light);
+      transition: transform .08s, background .08s;
+    }
+    .beat-load {
+      background: var(--dark); color: var(--light); border: 1.5px solid var(--soft);
+      padding: 4px 7px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer;
+    }
+
+    /* OPERATOR QUICK DOCK (RIGHT EDGE) */
+    .op-dock {
+      position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
+      z-index: 25; display: flex; flex-direction: column; gap: 8px;
+    }
+    .op-chip {
+      background: #121110; border: 2px solid var(--light); box-shadow: 4px 4px 0 #000;
+      padding: 6px 10px; font-size: 10px; font-weight: 900; letter-spacing: .08em;
+      text-transform: uppercase; text-align: right; transition: all .15s;
+    }
+    .op-chip:hover, .op-chip.active {
+      background: var(--ff-orange); color: #000; border-color: #000;
+      transform: translateX(-4px);
+    }
+
+    /* 3D CHARACTER VAULT MODAL */
+    .vault-modal {
+      position: fixed; inset: 0; z-index: 100; background: rgba(10,9,8,.92);
+      display: none; align-items: center; justify-content: center; padding: 24px;
+    }
+    .vault-modal.open { display: flex; }
+    .vault-box {
+      width: min(1220px, 96vw); height: min(740px, 90vh);
+      background: var(--deep); border: 3px solid var(--light); box-shadow: 12px 12px 0 #000;
+      display: grid; grid-template-columns: 1.55fr 1fr; overflow: hidden;
+    }
+    .vault-stage {
+      position: relative; background: radial-gradient(circle at 50% 45%, #2a1d17 0%, #0d0c0b 75%);
+      border-right: 3px solid var(--light); overflow: hidden;
+    }
+    #char3dCanvas { width: 100%; height: 100%; display: block; }
+    .vault-loader {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      background: rgba(12,11,10,.88); z-index: 5; font-weight: 800; letter-spacing: .1em;
+    }
+    .vault-loader.hidden { display: none; }
+    .vault-toolbar {
+      position: absolute; bottom: 14px; left: 14px; right: 14px; z-index: 6;
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .v-btn {
+      background: #000; color: var(--light); border: 2px solid var(--light);
+      box-shadow: 3px 3px 0 #000; padding: 6px 10px; font-size: 10px;
+      font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+    }
+    .v-btn.on, .v-btn:hover { background: var(--ff-orange); color: #000; border-color: #000; }
+
+    .vault-dossier {
+      padding: 22px; display: flex; flex-direction: column; justify-content: space-between;
+      overflow-y: auto; background: #161311;
+    }
+    .vault-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .vault-close {
+      background: var(--ff-orange); color: #000; border: 2px solid #000;
+      box-shadow: 4px 4px 0 #000; padding: 6px 12px; font-weight: 900; font-size: 12px;
+    }
+    .vault-char-name { font-size: 36px; line-height: 1.05; margin: 10px 0 6px; color: var(--ff-gold); }
+    .vault-skill-box {
+      background: #000; border: 2px solid var(--soft); padding: 12px; margin: 14px 0;
+      box-shadow: 4px 4px 0 var(--accent);
+    }
+    .stat-row { margin-bottom: 10px; }
+    .stat-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
+    .stat-track { height: 10px; background: #000; border: 1.5px solid var(--light); }
+    .stat-fill { height: 100%; background: var(--ff-orange); transition: width .5s var(--ease-out); }
+    .vault-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+
+    /* CHARACTER AI CHATBOT */
+    .vault-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    .vault-tab {
+      background: #000; color: var(--light); border: 2px solid var(--light);
+      padding: 7px; font-size: 11px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: .08em; box-shadow: 3px 3px 0 #000;
+    }
+    .vault-tab.active { background: var(--ff-orange); color: #000; border-color: #000; }
+
+    .chat-panel { display: none; flex-direction: column; height: 390px; gap: 8px; }
+    .chat-panel.active { display: flex; }
+    .dossier-panel { display: block; }
+    .dossier-panel.hidden { display: none; }
+
+    .chat-key-row { display: flex; gap: 6px; }
+    .chat-key-row input {
+      flex: 1; background: #000; color: var(--ff-gold); border: 1.5px solid var(--soft);
+      padding: 6px 8px; font-size: 11px; font-family: monospace; user-select: text;
+    }
+    .chat-messages {
+      flex: 1; overflow-y: auto; background: #0c0b0a; border: 2px solid var(--light);
+      padding: 10px; display: flex; flex-direction: column; gap: 8px; user-select: text;
+    }
+    .chat-msg {
+      max-width: 88%; padding: 8px 10px; font-size: 12px; line-height: 1.45;
+      border: 1.5px solid #000; box-shadow: 3px 3px 0 #000;
+    }
+    .chat-msg.user { align-self: flex-end; background: var(--ff-orange); color: #000; font-weight: 600; }
+    .chat-msg.bot { align-self: flex-start; background: #1f1815; color: var(--light); border-color: var(--soft); }
+    .chat-form { display: flex; gap: 6px; }
+    .chat-form input {
+      flex: 1; background: #000; color: var(--light); border: 2px solid var(--light);
+      padding: 8px 10px; font-size: 12px; user-select: text;
+    }
+    .chat-form button {
+      background: var(--ff-gold); color: #000; border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000; padding: 0 14px; font-weight: 900; font-size: 11px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage pre" id="stage">
+    <!-- 1. Hero & Section 2 Plates -->
+    <img class="plate plate-h1" id="plateH1" fetchpriority="high" decoding="async"
+         src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061107_c3030a30-c49e-4b74-be3f-c8a0750c193b.png&w=1344&q=85" alt="Iron Gate" />
+    <img class="plate plate-s2" id="plateS2" decoding="async"
+         src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061140_af2262a5-c52c-472a-be3c-ccfbdf621c3a.png&w=1344&q=85" alt="Foundry Courtyard" />
+    <!-- 2. Camera Scrub Canvas -->
+    <canvas class="cam" id="camCanvas" width="1280" height="720"></canvas>
+    <!-- 3. Real-Time 3D Ember Core -->
+    <canvas id="bg3d"></canvas>
+    <div class="shade"></div>
+
+    <!-- 4. Foreground Word + Rock Mounds -->
+    <div class="fg" id="fg">
+      <div class="word" id="bigWord">
+        <span><i>E</i><i>m</i><i>b</i><i>e</i><i>r</i><i>s</i></span>
+      </div>
+      <img class="mounds mound-l" id="moundL" crossorigin="anonymous"
+           src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_071757_11ac0e5d-35f5-4e49-bdab-2cee6a7a2ae3.png&w=1344&q=85" alt="" />
+      <img class="mounds mound-r" id="moundR" crossorigin="anonymous"
+           src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_071757_11ac0e5d-35f5-4e49-bdab-2cee6a7a2ae3.png&w=1344&q=85" alt="" />
+    </div>
+
+    <!-- 5. Nav -->
+    <header class="nav">
+      <a class="logo" href="#top" aria-label="Embers Foundry home" onclick="window.goState(0);return false;">
+        <svg viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="26" stroke="#EDE3DA" stroke-width="1.6"/>
+          <circle cx="28" cy="28" r="21" stroke="#EDE3DA" stroke-width="0.8" stroke-dasharray="1.5 3"/>
+          <path d="M28 13C24 19 21 23 21 28.5C21 32.5 24 35.5 28 35.5C32 35.5 35 32.5 35 28.5C35 24 32 20 28 13Z" fill="#EDE3DA"/>
+          <line x1="17" y1="41" x2="39" y2="41" stroke="#EDE3DA" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="20" y1="45" x2="36" y2="45" stroke="#EDE3DA" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-tag">FREE FIRE 3D</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" onclick="window.goState(0);return false;">Iron Gate</a></li>
+        <li><a href="#" onclick="window.goState(1);return false;">3D Squad</a></li>
+        <li><a href="#" onclick="window.openCharacter('alok');return false;">Alok 3D</a></li>
+        <li><a href="#" onclick="window.openCharacter('chrono');return false;">Chrono 3D</a></li>
+        <li><a href="#" onclick="window.openCharacter('kelly');return false;">Kelly 3D</a></li>
+      </ul>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu" onclick="window.goState(window.currentState === 0 ? 1 : 0)">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <!-- 6. Glyph Column -->
+    <div class="glyphs" id="glyphs">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><line x1="8" y1="1" x2="8" y2="15"/><line x1="4" y1="5" x2="12" y2="5"/></svg>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="8,1 15,8 8,15 1,8"/></svg>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg>
+      <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="1.4"/><circle cx="8" cy="3" r="1.2"/><circle cx="8" cy="13" r="1.2"/><circle cx="3" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L10 6L15 8L10 10L8 15L6 10L1 8L6 6Z"/></svg>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="8,2 14,14 2,14"/><line x1="5" y1="10" x2="11" y2="10"/></svg>
+    </div>
+
+    <!-- 7. Hero Section (State 1) -->
+    <section class="h1" id="secH1">
+      <h1 class="h1-title algerian" id="h1Title"><span>Forging Ancient Fire Into Booyah Legends.</span></h1>
+      <p class="h1-body" id="h1Body"><span>Scroll or press Space to enter the 3D Squad Vault. Click any Free Fire operator to inspect their real 3D model and chat with their AI.</span></p>
+      <a class="video-card" id="videoCard" href="#" aria-label="Enter 3D Vault" onclick="window.goState(1);return false;">
+        <svg viewBox="0 0 24 24" fill="none"><path id="play" d="M7 4L19 12L7 20Z" stroke="#EDE3DA" stroke-width="1.6"/></svg>
+        <span class="video-card-tag">ENTER 3D VAULT</span>
+      </a>
+      <div class="captions">
+        <div class="cap cap-1"><div class="mi"><span class="cap-num">01</span><span class="cap-txt">Drop the Beat,<br/>Heal the Squad.</span></div></div>
+        <div class="cap cap-2"><div class="mi"><span class="cap-num">02</span><span class="cap-txt">Time Turner,<br/>Tactical Shield.</span></div></div>
+        <div class="cap cap-3"><div class="mi"><span class="cap-num">03</span><span class="cap-txt">Crimson Crush,<br/>Rebel Rush.</span></div></div>
+        <div class="cap cap-4"><div class="mi"><span class="cap-num">04</span><span class="cap-txt">6 Real 3D Models,<br/>Live AI Chat.</span></div></div>
+      </div>
+    </section>
+
+    <!-- 8. Section 2 (State 2: 6-Character 3D Roster) -->
+    <section class="s2" id="secS2">
+      <div class="s2-ui">
+        <h2 class="s2-title algerian">Unveiling<br/>3D Legends<br/>Of The Forge.</h2>
+        <p class="s2-body">Select any Free Fire meta operator to launch their interactive 360° 3D model and AI Chatbot in the Brutalist Vault. Drag to orbit, toggle wireframe, and feel the live beat-reactive ember core.</p>
+        <button class="s2-cta" onclick="window.goState(0)">← Back To Iron Gate</button>
+        <div class="cards-grid" id="cardsGrid"></div>
+      </div>
+    </section>
+
+    <!-- 9. Operator Quick Dock -->
+    <div class="op-dock" id="opDock"></div>
+
+    <!-- 10. Neo-Brutalist Beat Deck HUD -->
+    <div class="beat-deck" id="beatDeck">
+      <button class="beat-btn" id="beatPlayBtn">▶ PLAY BEAT</button>
+      <canvas class="beat-viz" id="beatViz" width="110" height="28"></canvas>
+      <div class="beat-info">
+        <div class="beat-title" id="beatStatus">FINAL BEAT.MP3 — READY</div>
+        <div class="beat-bar" id="beatBar"><div class="beat-fill" id="beatFill"></div></div>
+      </div>
+      <div class="beat-led" id="beatLed" title="Bass Pulse"></div>
+      <label class="beat-load" title="Load custom MP3 if offline">
+        MP3
+        <input type="file" id="beatFileInput" accept="audio/*" hidden />
+      </label>
+    </div>
+  </main>
+
+  <!-- 11. 3D Character Vault & AI Chat Modal -->
+  <div class="vault-modal" id="vaultModal">
+    <div class="vault-box">
+      <div class="vault-stage">
+        <div class="vault-loader" id="vaultLoader">
+          <div class="algerian" style="font-size:24px;color:var(--ff-gold)">FORGING 3D MODEL...</div>
+          <div id="vaultLoadMsg" style="font-size:11px;color:var(--soft)">INITIALIZING WEBGL MESH</div>
+        </div>
+        <canvas id="char3dCanvas"></canvas>
+        <div class="vault-toolbar">
+          <button class="v-btn on" id="btnSpin">Auto-Spin: ON</button>
+          <button class="v-btn" id="btnWire">Wireframe: OFF</button>
+          <button class="v-btn" id="btnLight">Light: Foundry</button>
+          <button class="v-btn" id="btnReset">Reset Cam</button>
+        </div>
+      </div>
+      <div class="vault-dossier">
+        <div>
+          <div class="vault-top">
+            <span class="char-pill" id="vRole">ACTIVE SUPPORT</span>
+            <button class="vault-close" id="vaultClose">✕ CLOSE [ESC]</button>
+          </div>
+          <h2 class="vault-char-name algerian" id="vName">DJ ALOK</h2>
+
+          <!-- TAB SWITCHER: DOSSIER vs AI CHAT -->
+          <div class="vault-tabs">
+            <button class="vault-tab active" id="tabDossier">DOSSIER</button>
+            <button class="vault-tab" id="tabChat">💬 AI CHAT</button>
+          </div>
+
+          <!-- PANEL 1: CHARACTER STATS -->
+          <div class="dossier-panel" id="dossierPanel">
+            <p id="vTagline" style="font-size:12px;color:rgba(237,227,218,.8);line-height:1.45;"></p>
+            <div class="vault-skill-box">
+              <div style="font-size:10px;color:var(--ff-orange);font-weight:900;letter-spacing:.1em;">SIGNATURE ABILITY</div>
+              <div id="vSkill" class="algerian" style="font-size:18px;margin:4px 0;">DROP THE BEAT</div>
+              <div id="vSkillDesc" style="font-size:12px;color:rgba(237,227,218,.85);line-height:1.45;"></div>
+            </div>
+            <div id="vStats"></div>
+          </div>
+
+          <!-- PANEL 2: CHARACTER AI CHATBOT -->
+          <div class="chat-panel" id="chatPanel">
+            <div class="chat-key-row">
+              <input type="password" id="apiKeyInput" placeholder="Paste Gemini (AIza...) or OpenAI (sk-...) API Key" />
+              <button class="v-btn" id="saveKeyBtn" type="button">SAVE</button>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <form class="chat-form" id="chatForm">
+              <input type="text" id="chatInput" placeholder="Ask this character anything..." autocomplete="off" />
+              <button type="submit" id="chatSendBtn">SEND</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="vault-nav">
+          <button class="v-btn" id="vPrev">← PREV OPERATOR</button>
+          <button class="v-btn" id="vNext">NEXT OPERATOR →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+    import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+
+    // =========================================================================
+    // 1. FREE FIRE 6-CHARACTER ROSTER + EXACT MODEL / TEXTURE MAPS
+    // =========================================================================
+    const CHARACTERS = [
+      {
+        id: 'alok', name: 'DJ ALOK', role: 'ACTIVE SUPPORT', color: 0xff6b00, bgPos: '0% 0%',
+        skill: 'Drop The Beat',
+        tagline: 'World-famous DJ who turns the battlefield into a high-tempo healing arena.',
+        skillDesc: 'Creates a 5m aura that increases movement speed by 15% and restores 5 HP/s for 10s.',
+        stats: { Speed: 92, Healing: 98, Shield: 62, Aggression: 84 },
+        modelType: 'fbx', modelPath: './models/alok/alok.fbx',
+        fbxTex: {
+          '20210528_115100': './models/alok/20210528_115100.jpeg',
+          'baju': './models/alok/20210528_115100.jpeg',
+          'celana': './models/alok/celana.png',
+          'kacamata': './models/alok/kacamata.png',
+          'kulit': './models/alok/kulit.png',
+          'rambut': './models/alok/rambut.png',
+          'sepatu': './models/alok/sepatu.png'
+        }
+      },
+      {
+        id: 'chrono', name: 'CHRONO', role: 'TACTICAL SHIELD', color: 0x00d4ff, bgPos: '100% 0%',
+        skill: 'Time Turner',
+        tagline: 'Bounty hunter from an alternate universe wielding impenetrable force-field tech.',
+        skillDesc: 'Deploys an impenetrable force field blocking 800 damage from enemies outside the dome.',
+        stats: { Speed: 85, Healing: 45, Shield: 100, Aggression: 88 },
+        modelType: 'obj', modelPath: './models/chrono/chrono.obj',
+        objMtl: {
+          'CR7_Head': './models/chrono/free-fire-chrono-character-3d-model-obj_(5.jpeg',
+          'CR7_Top': './models/chrono/free-fire-chrono-character-3d-model-obj_(9.jpeg',
+          'CR7_Bottum': './models/chrono/free-fire-chrono-character-3d-model-obj_(2.jpeg',
+          'CR7_Hair': './models/chrono/free-fire-chrono-character-3d-model-obj_(4.jpeg',
+          'CR7_Shoe': './models/chrono/free-fire-chrono-character-3d-model-obj_(7.jpeg',
+          'CR7_Accessory': './models/chrono/free-fire-chrono-character-3d-model-obj.jpeg'
+        }
+      },
+      {
+        id: 'k', name: 'K (CAPTAIN BOOYAH)', role: 'EP / HP MASTER', color: 0xffd000, bgPos: '0% 100%',
+        skill: 'Master of All',
+        tagline: 'Jiu-Jitsu professor and tactical commander with infinite EP-to-HP conversion.',
+        skillDesc: 'Switches between Jiu-Jitsu (500% EP conversion rate) and Psychology (+3 EP/s) modes.',
+        stats: { Speed: 80, Healing: 99, Shield: 75, Aggression: 82 },
+        modelType: 'obj', modelPath: './models/k/k.obj',
+        objMtl: {
+          'Male_Lobby_Hair_Sc_Professor': './models/k/male_sc_foodieboy_hair_001_s.png',
+          'Male_Lobby_Head_Sc_Professor': './models/k/Male_Lobby_Head_Sc_Professor_D.png',
+          'Male_Lobby_Top_Sc_Professor': './models/k/Male_Top_Sc_Professor_D.png',
+          'Male_Lobby_Body_Sc_Professor': './models/k/Male_Body_Cos_Professor_D.png',
+          'Male_Lobby_Bottom_Sc_Professor': './models/k/Male_Bottom_Sc_Professor_D.png',
+          'Male_Lobby_Shoe_Sc_Professor': './models/k/Male_Shoe_Sc_Professor_D.png'
+        }
+      },
+      {
+        id: 'kelly', name: 'KELLY', role: 'SPEED RUSHER', color: 0xffc400, bgPos: '100% 100%',
+        skill: 'Dash / Deadly Velocity',
+        tagline: 'Track sprinter known across Bermuda for blinding flanks and first-shot crits.',
+        skillDesc: 'Boosts sprinting speed by 6% permanently; Awakened form deals 106% damage on first shot.',
+        stats: { Speed: 100, Healing: 40, Shield: 55, Aggression: 94 },
+        modelType: 'fbx', modelPath: './models/kelly/kelly.fbx',
+        fbxTex: {
+          'body': './models/kelly/body.png',
+          'bra': './models/kelly/bra.png',
+          'face': './models/kelly/face.png',
+          'hairs': './models/kelly/hairs.png',
+          'pent': './models/kelly/pent.png',
+          'shoes1': './models/kelly/shoes1.png'
+        }
+      },
+      {
+        id: 'orion', name: 'ORION', role: 'CRIMSON INVINCIBLE', color: 0xff2244, bgPos: '0% 0%',
+        skill: 'Crimson Crush',
+        tagline: 'Vengeful warrior who replaces EP with Crimson Energy to phase through lethal fire.',
+        skillDesc: 'Becomes invulnerable for 3s while absorbing 10 HP from enemies within a 5m radius.',
+        stats: { Speed: 84, Healing: 82, Shield: 96, Aggression: 96 },
+        modelType: 'obj', modelPath: './models/orion/orion.obj',
+        objMtl: {
+          'mat0': './models/orion/tex_0145_0out.png',
+          'mat0.004': './models/orion/tex_0150_0out.png',
+          'mat0.003': './models/orion/tex_0155_0out.png',
+          'mat0.002': './models/orion/tex_0160_0out.png',
+          'mat0.001': './models/orion/tex_0165_0out.png',
+          'mat0.005': './models/orion/tex_0170_0out.png'
+        }
+      },
+      {
+        id: 'tatsuya', name: 'TATSUYA', role: 'REBEL ASSAULT', color: 0xff5500, bgPos: '100% 0%',
+        skill: 'Rebel Rush',
+        tagline: 'Street-born entry fragger built for explosive double-dash close-quarters pushes.',
+        skillDesc: 'Dashes forward at extreme speed for 0.3s; stores up to 2 charges for relentless pressure.',
+        stats: { Speed: 98, Healing: 35, Shield: 58, Aggression: 99 },
+        modelType: 'obj', modelPath: './models/tatsuya/tatsuya.obj',
+        objMtl: {
+          'mat_25': './models/tatsuya/hair.png',
+          'mat_14': './models/tatsuya/body.png',
+          'mat_2': './models/tatsuya/top.png',
+          'mat_16': './models/tatsuya/bottom.png',
+          'mat_34': './models/tatsuya/shoe.png'
+        }
+      }
+    ];
+
+    // Build State 2 Cards & Right-Edge Quick Dock
+    const cardsGrid = document.getElementById('cardsGrid');
+    const opDock = document.getElementById('opDock');
+    CHARACTERS.forEach((c, idx) => {
+      const card = document.createElement('div');
+      card.className = 'char-card';
+      card.innerHTML = `
+        <div class="char-card-bg" style="background-position:${c.bgPos}"></div>
+        <div class="char-card-inner">
+          <div class="char-badge">
+            <span class="char-pill">${c.role}</span>
+            <span>0${idx + 1}</span>
+          </div>
+          <div>
+            <div class="char-name algerian">${c.name}</div>
+            <div class="char-skill">${c.skill}</div>
+            <span class="char-open-tag">OPEN 3D + AI CHAT ↗</span>
+          </div>
+        </div>`;
+      card.onclick = () => window.openCharacter(c.id);
+      cardsGrid.appendChild(card);
+
+      const chip = document.createElement('button');
+      chip.className = 'op-chip';
+      chip.dataset.id = c.id;
+      chip.textContent = c.name;
+      chip.onclick = () => window.openCharacter(c.id);
+      opDock.appendChild(chip);
+    });
+
+    // =========================================================================
+    // 2. BEAT PLAYER + WEB AUDIO ANALYSER (FINAL BEAT.MP3)
+    // =========================================================================
+    const audio = new Audio('./audio/Final beat.mp3');
+    audio.loop = true;
+    audio.crossOrigin = 'anonymous';
+
+    let audioCtx, analyser, freqData, beatBass = 0;
+    const beatPlayBtn = document.getElementById('beatPlayBtn');
+    const beatStatus = document.getElementById('beatStatus');
+    const beatFill = document.getElementById('beatFill');
+    const beatBar = document.getElementById('beatBar');
+    const beatLed = document.getElementById('beatLed');
+    const vizCanvas = document.getElementById('beatViz');
+    const vizCtx = vizCanvas.getContext('2d');
+
+    function ensureAudioCtx() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = audioCtx.createMediaElementSource(audio);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64;
+      freqData = new Uint8Array(analyser.frequencyBinCount);
+      src.connect(analyser);
+      analyser.connect(audioCtx.destination);
+    }
+
+    async function toggleBeat() {
+      ensureAudioCtx();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      if (audio.paused) {
+        try {
+          await audio.play();
+          beatPlayBtn.textContent = '❚❚ PAUSE BEAT';
+          beatPlayBtn.classList.add('playing');
+          beatStatus.textContent = 'FINAL BEAT.MP3 — LIVE';
+        } catch {
+          beatStatus.textContent = 'CLICK MP3 TO LOAD BEAT';
+        }
+      } else {
+        audio.pause();
+        beatPlayBtn.textContent = '▶ PLAY BEAT';
+        beatPlayBtn.classList.remove('playing');
+        beatStatus.textContent = 'FINAL BEAT.MP3 — PAUSED';
+      }
+    }
+    beatPlayBtn.onclick = toggleBeat;
+
+    beatBar.onclick = (e) => {
+      if (!audio.duration) return;
+      const r = beatBar.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+    };
+
+    document.getElementById('beatFileInput').onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      audio.src = URL.createObjectURL(f);
+      beatStatus.textContent = f.name.toUpperCase();
+      toggleBeat();
+    };
+
+    function updateBeatVisualizer() {
+      vizCtx.fillStyle = '#000';
+      vizCtx.fillRect(0, 0, vizCanvas.width, vizCanvas.height);
+      if (analyser && !audio.paused) {
+        analyser.getByteFrequencyData(freqData);
+        let bassSum = 0;
+        for (let i = 0; i < 4; i++) bassSum += freqData[i];
+        beatBass = (bassSum / (4 * 255));
+        const bars = 16;
+        const bw = vizCanvas.width / bars;
+        for (let i = 0; i < bars; i++) {
+          const val = freqData[i] / 255;
+          const h = Math.max(2, val * vizCanvas.height);
+          vizCtx.fillStyle = i < 4 ? '#FF6B00' : (i < 10 ? '#FFD000' : '#EDE3DA');
+          vizCtx.fillRect(i * bw + 1, vizCanvas.height - h, bw - 2, h);
+        }
+        beatLed.style.background = beatBass > 0.55 ? '#FF6B00' : '#FFD000';
+        beatLed.style.transform = `scale(${1 + beatBass * 0.5})`;
+        if (audio.duration) beatFill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+      } else {
+        beatBass *= 0.9;
+        beatLed.style.background = '#333';
+        beatLed.style.transform = 'scale(1)';
+      }
+    }
+
+    // =========================================================================
+    // 3. REAL-TIME 3D EMBER CORE (AMBIENT BACKGROUND)
+    // =========================================================================
+    const bgCanvas = document.getElementById('bg3d');
+    const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
+    bgRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const bgScene = new THREE.Scene();
+    const bgCam = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+    bgCam.position.set(0, 0, 7);
+
+    const coreGroup = new THREE.Group();
+    bgScene.add(coreGroup);
+
+    const coreMat = new THREE.MeshStandardMaterial({
+      color: 0xff6b00, emissive: 0xc54b1b, emissiveIntensity: 0.7,
+      roughness: 0.25, metalness: 0.8, flatShading: true
+    });
+    const coreMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.05, 1), coreMat);
+    const cageMesh = new THREE.Mesh(
+      new THREE.OctahedronGeometry(1.55, 0),
+      new THREE.MeshBasicMaterial({ color: 0xede3da, wireframe: true, transparent: true, opacity: 0.35 })
+    );
+    const ring1 = new THREE.Mesh(
+      new THREE.TorusGeometry(2.1, 0.025, 8, 64),
+      new THREE.MeshBasicMaterial({ color: 0xffd000, transparent: true, opacity: 0.5 })
+    );
+    ring1.rotation.x = Math.PI * 0.38;
+    coreGroup.add(coreMesh, cageMesh, ring1);
+
+    const pCount = 360;
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount; i++) {
+      pPos[i * 3] = (Math.random() - 0.5) * 14;
+      pPos[i * 3 + 1] = (Math.random() - 0.5) * 9;
+      pPos[i * 3 + 2] = (Math.random() - 0.5) * 6;
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const embers = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xff8833, size: 0.055, transparent: true, opacity: 0.85 }));
+    bgScene.add(embers);
+    bgScene.add(new THREE.PointLight(0xff7722, 6, 20), new THREE.AmbientLight(0xffffff, 0.6));
+
+    function resizeBg() {
+      bgRenderer.setSize(innerWidth, innerHeight);
+      bgCam.aspect = innerWidth / innerHeight;
+      bgCam.updateProjectionMatrix();
+    }
+    resizeBg();
+    addEventListener('resize', resizeBg);
+
+    // =========================================================================
+    // 4. 3D CHARACTER VAULT VIEWER (REAL OBJ & FBX MODELS + ORBITCONTROLS)
+    // =========================================================================
+    const vaultModal = document.getElementById('vaultModal');
+    const vaultLoader = document.getElementById('vaultLoader');
+    const vaultLoadMsg = document.getElementById('vaultLoadMsg');
+    const charCanvas = document.getElementById('char3dCanvas');
+
+    const vRenderer = new THREE.WebGLRenderer({ canvas: charCanvas, antialias: true, alpha: true });
+    vRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    vRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    const vScene = new THREE.Scene();
+    const vCam = new THREE.PerspectiveCamera(40, 1.4, 0.1, 100);
+    vCam.position.set(0, 1.35, 3.6);
+
+    const vControls = new OrbitControls(vCam, charCanvas);
+    vControls.enableDamping = true;
+    vControls.target.set(0, 1.0, 0);
+
+    const keyLight = new THREE.DirectionalLight(0xfff1e0, 2.4);
+    keyLight.position.set(3, 5, 4);
+    const rimLight = new THREE.DirectionalLight(0xff6b00, 2.0);
+    rimLight.position.set(-4, 3, -3);
+    const ambLight = new THREE.AmbientLight(0xffffff, 0.9);
+    vScene.add(keyLight, rimLight, ambLight);
+
+    const pedRing = new THREE.Mesh(
+      new THREE.TorusGeometry(0.95, 0.035, 8, 48),
+      new THREE.MeshBasicMaterial({ color: 0xff6b00 })
+    );
+    pedRing.rotation.x = Math.PI / 2;
+    vScene.add(pedRing);
+
+    const gridHelper = new THREE.GridHelper(6, 16, 0xff6b00, 0x332822);
+    vScene.add(gridHelper);
+
+    let activeModel = null, activeCharIdx = 0, autoSpin = true, wireMode = false, studioLight = false;
+    const modelCache = new Map();
+    const texLoader = new THREE.TextureLoader();
+
+    function normalizeModel(obj) {
+      const box = new THREE.Box3().setFromObject(obj);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const scale = 2.05 / maxDim;
+      obj.scale.setScalar(scale);
+      obj.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+      return obj;
+    }
+
+    async function loadCharacter3D(char) {
+      vaultLoader.classList.remove('hidden');
+      vaultLoadMsg.textContent = `LOADING ${char.name} (${char.modelType.toUpperCase()})...`;
+
+      if (activeModel) { vScene.remove(activeModel); activeModel = null; }
+      pedRing.material.color.setHex(char.color);
+      rimLight.color.setHex(char.color);
+      coreMat.color.setHex(char.color);
+
+      if (modelCache.has(char.id)) {
+        activeModel = modelCache.get(char.id);
+        vScene.add(activeModel);
+        applyWireframe();
+        vaultLoader.classList.add('hidden');
+        return;
+      }
+
+      try {
+        let root;
+        if (char.modelType === 'fbx') {
+          const mgr = new THREE.LoadingManager();
+          mgr.setURLModifier((url) => {
+            const base = url.split(/[\\/]/).pop().replace(/\.[^.]+$/, '').toLowerCase();
+            return char.fbxTex[base] || url;
+          });
+          const fbxLoader = new FBXLoader(mgr);
+          root = await fbxLoader.loadAsync(char.modelPath);
+          root.traverse((ch) => {
+            if (ch.isMesh) {
+              const mats = Array.isArray(ch.material) ? ch.material : [ch.material];
+              mats.forEach((m) => { if (m) m.side = THREE.DoubleSide; });
+            }
+          });
+        } else {
+          const objLoader = new OBJLoader();
+          root = await objLoader.loadAsync(char.modelPath);
+          const loadedTex = {};
+          for (const [mtlName, texUrl] of Object.entries(char.objMtl)) {
+            const t = texLoader.load(texUrl);
+            t.colorSpace = THREE.SRGBColorSpace;
+            loadedTex[mtlName] = t;
+          }
+          root.traverse((ch) => {
+            if (ch.isMesh) {
+              const mats = Array.isArray(ch.material) ? ch.material : [ch.material];
+              const mapped = mats.map((m) => {
+                const tex = loadedTex[m?.name] || Object.values(loadedTex)[0];
+                return new THREE.MeshStandardMaterial({
+                  map: tex, roughness: 0.55, metalness: 0.15, side: THREE.DoubleSide
+                });
+              });
+              ch.material = mapped.length === 1 ? mapped[0] : mapped;
+            }
+          });
+        }
+        normalizeModel(root);
+        modelCache.set(char.id, root);
+        activeModel = root;
+        vScene.add(activeModel);
+        applyWireframe();
+        vaultLoader.classList.add('hidden');
+      } catch (err) {
+        vaultLoadMsg.textContent = `RUN VIA LIVE SERVER TO LOAD ${char.modelPath}`;
+        console.error(err);
+      }
+    }
+
+    function applyWireframe() {
+      if (!activeModel) return;
+      activeModel.traverse((c) => {
+        if (c.isMesh) {
+          const mats = Array.isArray(c.material) ? c.material : [c.material];
+          mats.forEach((m) => { if (m) m.wireframe = wireMode; });
+        }
+      });
+    }
+
+    function resizeVault() {
+      const box = charCanvas.parentElement.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+      vRenderer.setSize(box.width, box.height);
+      vCam.aspect = box.width / box.height;
+      vCam.updateProjectionMatrix();
+    }
+
+    window.openCharacter = (id) => {
+      activeCharIdx = Math.max(0, CHARACTERS.findIndex((c) => c.id === id));
+      const c = CHARACTERS[activeCharIdx];
+      document.getElementById('vRole').textContent = c.role;
+      document.getElementById('vName').textContent = c.name;
+      document.getElementById('vTagline').textContent = c.tagline;
+      document.getElementById('vSkill').textContent = c.skill;
+      document.getElementById('vSkillDesc').textContent = c.skillDesc;
+      document.getElementById('vStats').innerHTML = Object.entries(c.stats).map(([k, v]) => `
+        <div class="stat-row">
+          <div class="stat-head"><span>${k}</span><span>${v}/100</span></div>
+          <div class="stat-track"><div class="stat-fill" style="width:${v}%"></div></div>
+        </div>`).join('');
+      document.querySelectorAll('.op-chip').forEach((el) => el.classList.toggle('active', el.dataset.id === c.id));
+      vaultModal.classList.add('open');
+      resizeVault();
+      loadCharacter3D(c);
+      renderChatMessages();
+    };
+
+    document.getElementById('vaultClose').onclick = () => vaultModal.classList.remove('open');
+    document.getElementById('vPrev').onclick = () => window.openCharacter(CHARACTERS[(activeCharIdx + CHARACTERS.length - 1) % CHARACTERS.length].id);
+    document.getElementById('vNext').onclick = () => window.openCharacter(CHARACTERS[(activeCharIdx + 1) % CHARACTERS.length].id);
+    document.getElementById('btnSpin').onclick = (e) => { autoSpin = !autoSpin; e.target.textContent = `Auto-Spin: ${autoSpin ? 'ON' : 'OFF'}`; e.target.classList.toggle('on', autoSpin); };
+    document.getElementById('btnWire').onclick = (e) => { wireMode = !wireMode; e.target.textContent = `Wireframe: ${wireMode ? 'ON' : 'OFF'}`; e.target.classList.toggle('on', wireMode); applyWireframe(); };
+    document.getElementById('btnLight').onclick = (e) => {
+      studioLight = !studioLight;
+      ambLight.intensity = studioLight ? 1.8 : 0.9;
+      e.target.textContent = `Light: ${studioLight ? 'Studio' : 'Foundry'}`;
+    };
+    document.getElementById('btnReset').onclick = () => { vCam.position.set(0, 1.35, 3.6); vControls.target.set(0, 1.0, 0); };
+
+    // =========================================================================
+    // 5. EMBERS FOUNDRY RUNTIME: MOUNDS CLEANUP, CAMERA TRANSITION & LOAD TIMINGS
+    // =========================================================================
+    const stage = document.getElementById('stage');
+    const plateH1 = document.getElementById('plateH1');
+    const plateS2 = document.getElementById('plateS2');
+    const moundL = document.getElementById('moundL');
+    const moundR = document.getElementById('moundR');
+    const secH1 = document.getElementById('secH1');
+    const secS2 = document.getElementById('secS2');
+    const fg = document.getElementById('fg');
+
+    const QOUT = 'cubic-bezier(.25,1,.5,1)';
+    const COUT = 'cubic-bezier(.33,1,.68,1)';
+
+    function smoothstep(e0, e1, x) {
+      const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
+      return t * t * (3 - 2 * t);
+    }
+
+    async function cleanMounds() {
+      try {
+        await moundL.decode();
+        const c = document.createElement('canvas');
+        c.width = moundL.naturalWidth; c.height = moundL.naturalHeight;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(moundL, 0, 0);
+        const img = ctx.getImageData(0, 0, c.width, c.height);
+        const d = img.data;
+        for (let i = 0; i < d.length; i += 4) {
+          if (d[i + 3] === 0) continue;
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          const m = Math.max(r, b);
+          const diff = (g - m) / 255;
+          if (diff > 0) {
+            d[i + 3] = Math.round(d[i + 3] * (1 - smoothstep(0.10, 0.38, diff)));
+            d[i + 1] = Math.min(g, Math.round(m * 0.96));
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        const blob = await new Promise((res) => c.toBlob(res, 'image/png'));
+        const url = URL.createObjectURL(blob);
+        moundL.src = url; moundR.src = url;
+        await Promise.all([moundL.decode(), moundR.decode()]);
+      } catch {}
+    }
+
+    function runIntro() {
+      stage.classList.remove('pre');
+      plateH1.animate([{ transform: 'scale(1.3)' }, { transform: 'none' }], { duration: 1350, easing: QOUT, fill: 'both' });
+      moundR.animate([{ transform: 'translateX(45%)' }, { transform: 'none' }], { duration: 1700, easing: QOUT, fill: 'both' });
+      moundL.animate([{ transform: 'translateX(-45%)' }, { transform: 'none' }], { delay: 40, duration: 1700, easing: QOUT, fill: 'both' });
+      document.querySelectorAll('#navLinks li a').forEach((a, i) => {
+        a.animate([{ transform: 'translateY(-110%)' }, { transform: 'none' }], { delay: 100 + i * 100, duration: 300, easing: COUT, fill: 'both' });
+      });
+      document.getElementById('menuBtn').animate([{ opacity: 0 }, { opacity: 1 }], { delay: 530, duration: 200, fill: 'both' });
+      document.querySelector('#h1Title > span').animate([{ transform: 'translateY(-100%)' }, { transform: 'none' }], { delay: 390, duration: 950, easing: COUT, fill: 'both' });
+      document.querySelector('#h1Body > span').animate([{ transform: 'translateY(100%)' }, { transform: 'none' }], { delay: 450, duration: 900, easing: COUT, fill: 'both' });
+      document.getElementById('videoCard').animate([{ opacity: 0 }, { opacity: 1 }], { delay: 570, duration: 260, fill: 'both' });
+      document.getElementById('glyphs').animate([{ opacity: 0, transform: 'translateX(10px)' }, { opacity: 1, transform: 'none' }], { delay: 600, duration: 400, easing: COUT, fill: 'both' });
+    }
+
+    Promise.race([
+      Promise.all([document.fonts.ready, plateH1.decode().catch(() => {}), cleanMounds()]),
+      new Promise((r) => setTimeout(r, 2500))
+    ]).then(() => requestAnimationFrame(() => requestAnimationFrame(runIntro)));
+
+    // Two-State Navigation
+    window.currentState = 0;
+    let locked = false;
+    window.goState = (next) => {
+      if (locked || next === window.currentState) return;
+      locked = true;
+      window.currentState = next;
+      const forward = next === 1;
+      plateS2.animate([{ opacity: forward ? 0 : 1 }, { opacity: forward ? 1 : 0 }], { duration: 900, easing: COUT, fill: 'both' });
+      secH1.animate([{ opacity: forward ? 1 : 0 }, { opacity: forward ? 0 : 1 }], { duration: 500, easing: COUT, fill: 'both' });
+      fg.animate([{ opacity: forward ? 1 : 0 }, { opacity: forward ? 0 : 1 }], { duration: 600, easing: COUT, fill: 'both' });
+      secH1.style.pointerEvents = forward ? 'none' : 'auto';
+      secS2.classList.toggle('active', forward);
+      setTimeout(() => { locked = false; }, 950);
+    };
+
+    addEventListener('wheel', (e) => {
+      if (vaultModal.classList.contains('open')) return;
+      if (e.deltaY > 25) window.goState(1);
+      else if (e.deltaY < -25) window.goState(0);
+    }, { passive: true });
+
+    addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { vaultModal.classList.remove('open'); return; }
+      if (vaultModal.classList.contains('open')) return;
+      if (e.key === 'ArrowDown' || e.key === ' ') window.goState(window.currentState === 0 ? 1 : 0);
+      if (e.key === 'ArrowUp') window.goState(0);
+    });
+
+    // =========================================================================
+    // 6. PER-CHARACTER AI CHATBOT (GEMINI + OPENAI AUTO-DETECT)
+    // =========================================================================
+    const DEFAULT_API_KEY = ""; // Optional: paste your API key between quotes
+    const chatHistory = {};
+
+    const tabDossier = document.getElementById('tabDossier');
+    const tabChat = document.getElementById('tabChat');
+    const dossierPanel = document.getElementById('dossierPanel');
+    const chatPanel = document.getElementById('chatPanel');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatForm = document.getElementById('chatForm');
+
+    apiKeyInput.value = localStorage.getItem('ff_ai_api_key') || DEFAULT_API_KEY;
+    document.getElementById('saveKeyBtn').onclick = () => {
+      localStorage.setItem('ff_ai_api_key', apiKeyInput.value.trim());
+      alert('API Key saved!');
+    };
+
+    function switchVaultTab(mode) {
+      const isChat = mode === 'chat';
+      tabChat.classList.toggle('active', isChat);
+      tabDossier.classList.toggle('active', !isChat);
+      chatPanel.classList.toggle('active', isChat);
+      dossierPanel.classList.toggle('hidden', isChat);
+      if (isChat) renderChatMessages();
+    }
+    tabDossier.onclick = () => switchVaultTab('dossier');
+    tabChat.onclick = () => switchVaultTab('chat');
+
+    function renderChatMessages() {
+      const char = CHARACTERS[activeCharIdx];
+      if (!chatHistory[char.id]) {
+        chatHistory[char.id] = [{
+          role: 'bot',
+          text: `Yo! I'm ${char.name}. Ask me anything about my ${char.skill} ability, Free Fire combos, or anything else!`
+        }];
+      }
+      chatMessages.innerHTML = chatHistory[char.id].map((m) =>
+        `<div class="chat-msg ${m.role}">${m.text.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>`
+      ).join('');
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function askCharacterAI(char, userText, apiKey) {
+      const systemPrompt = `You are ${char.name} from Garena Free Fire. Role: ${char.role}. Signature skill: ${char.skill} (${char.skillDesc}). Stay in character with a bold, energetic tone, answer any question the user asks clearly and concisely (2-4 sentences).`;
+
+      if (apiKey.startsWith('sk-')) {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userText }
+            ]
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'OpenAI API error');
+        return data.choices[0].message.content;
+      } else {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: 'user', parts: [{ text: userText }] }]
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'Gemini API error');
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
+      }
+    }
+
+    chatForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      const apiKey = (apiKeyInput.value || DEFAULT_API_KEY).trim();
+      if (!text) return;
+      if (!apiKey) {
+        alert('Please paste your API key in the top box first!');
+        return;
+      }
+
+      const char = CHARACTERS[activeCharIdx];
+      chatHistory[char.id].push({ role: 'user', text });
+      chatHistory[char.id].push({ role: 'bot', text: 'Typing...' });
+      chatInput.value = '';
+      renderChatMessages();
+
+      try {
+        const reply = await askCharacterAI(char, text, apiKey);
+        chatHistory[char.id][chatHistory[char.id].length - 1].text = reply;
+      } catch (err) {
+        chatHistory[char.id][chatHistory[char.id].length - 1].text = `Error: ${err.message}`;
+      }
+      renderChatMessages();
+    };
+
+    // Main Render Loop (Background 3D + Vault 3D + Beat Visualizer)
+    function animate() {
+      requestAnimationFrame(animate);
+      updateBeatVisualizer();
+
+      const pulse = 1 + beatBass * 0.28;
+      coreGroup.scale.setScalar(pulse);
+      coreMesh.rotation.y += 0.008 + beatBass * 0.03;
+      coreMesh.rotation.x += 0.004;
+      cageMesh.rotation.y -= 0.006;
+      ring1.rotation.z += 0.01 + beatBass * 0.025;
+      coreGroup.position.x += ((window.currentState === 1 ? -2.2 : 0) - coreGroup.position.x) * 0.06;
+
+      const pos = embers.geometry.attributes.position;
+      for (let i = 0; i < pCount; i++) {
+        let y = pos.getY(i) + 0.012 + beatBass * 0.04;
+        if (y > 4.5) y = -4.5;
+        pos.setY(i, y);
+      }
+      pos.needsUpdate = true;
+      bgRenderer.render(bgScene, bgCam);
+
+      if (vaultModal.classList.contains('open')) {
+        if (activeModel && autoSpin) activeModel.rotation.y += 0.008 + beatBass * 0.015;
+        pedRing.scale.setScalar(1 + beatBass * 0.16);
+        vControls.update();
+        vRenderer.render(vScene, vCam);
+      }
+    }
+    animate();
+  </script>
+</body>
+</html>
