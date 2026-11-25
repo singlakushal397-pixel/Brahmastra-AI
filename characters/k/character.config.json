@@ -3,14 +3,14 @@
   "name": "K (CAPTAIN BOOYAH)",
   "displayName": "K — Captain Booyah",
   "role": "EP / HP MASTER",
-  "color": "0x00e5ff",
-  "accentHex": "#00E5FF",
+  "color": "0xff8c00",
+  "accentHex": "#FF8C00",
   "secondaryHex": "#FFD000",
   "bgPos": "0% 100%",
   "status": "active",
-  "tagline": "Jiu-jitsu professor and tactical commander with dual-mode EP-to-HP mastery.",
-  "biography": "Known both as K and Captain Booyah, this disciplined professor and jiu-jitsu master merges martial discipline with psychological insight. He mentors squads to cultivate consistency, mental clarity, and endurance.",
-  "verifiedVersion": "Free Fire OB4x / Free Fire India Reference",
+  "tagline": "Jiu-jitsu professor and tactical commander wielding the Master of All orange-gold EP aura.",
+  "biography": "Known both as K and Captain Booyah, this disciplined professor and jiu-jitsu master merges martial discipline with psychological insight. Clad in his signature red long coat and belt, he channels Master of All to sustain both himself and his squad.",
+  "verifiedVersion": "Official Garena Free Fire K Profile (ff.garena.com/en/chars/412)",
   "stats": {
     "Speed": 80,
     "Healing": 99,
@@ -21,6 +21,6 @@
     "How can I become mentally stronger?",
     "What is the importance of consistency?",
     "Explain Jiu-jitsu Mode vs Psychology Mode.",
-    "How do you guide a squad under pressure?"
+    "How does Master of All support a squad?"
   ]
 }

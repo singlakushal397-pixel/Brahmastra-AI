@@ -484,73 +484,121 @@ export class AbilityVFXManager {
   }
 
   // ---------------------------------------------------------------------------
-  // 3. K (CAPTAIN BOOYAH) — MASTER OF ALL (JIU-JITSU & PSYCHOLOGY MODES)
+  // 3. K (CAPTAIN BOOYAH) — MASTER OF ALL (ORANGE-GOLD GROUND AURA + MODES)
   // ---------------------------------------------------------------------------
   _buildKMasterOfAll() {
     const group = new THREE.Group();
     this.rootGroup.add(group);
 
-    const baseRingMat = this.track(new THREE.MeshBasicMaterial({
-      color: 0x00e5ff, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending,
+    // Complementary ground-projected orange-gold circular aura (5m visual demo scale)
+    const floorCanvas = document.createElement('canvas');
+    floorCanvas.width = 512;
+    floorCanvas.height = 512;
+    const fctx = floorCanvas.getContext('2d');
+    const grad = fctx.createRadialGradient(256, 256, 40, 256, 256, 252);
+    grad.addColorStop(0.0, 'rgba(255, 140, 0, 0.04)');
+    grad.addColorStop(0.55, 'rgba(255, 145, 0, 0.16)');
+    grad.addColorStop(0.82, 'rgba(255, 195, 35, 0.55)');
+    grad.addColorStop(0.95, 'rgba(255, 115, 0, 0.25)');
+    grad.addColorStop(1.0, 'rgba(255, 90, 0, 0.0)');
+    fctx.fillStyle = grad;
+    fctx.fillRect(0, 0, 512, 512);
+
+    const floorTex = this.track(new THREE.CanvasTexture(floorCanvas));
+    floorTex.colorSpace = THREE.SRGBColorSpace;
+    const floorMat = this.track(new THREE.MeshBasicMaterial({
+      map: floorTex,
+      transparent: true,
+      opacity: 0.7,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
     }));
-    const baseRing = new THREE.Mesh(this.track(new THREE.TorusGeometry(1.18, 0.028, 12, 64)), baseRingMat);
+    const floorDisc = new THREE.Mesh(this.track(new THREE.CircleGeometry(1.52, 64)), floorMat);
+    floorDisc.rotation.x = -Math.PI / 2;
+    floorDisc.position.y = 0.015;
+
+    const baseRingMat = this.track(new THREE.MeshBasicMaterial({
+      color: 0xff8c00, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending,
+    }));
+    const baseRing = new THREE.Mesh(this.track(new THREE.TorusGeometry(1.32, 0.026, 12, 64)), baseRingMat);
     baseRing.rotation.x = Math.PI / 2;
     baseRing.position.y = 0.03;
 
-    const pulseRingMat = this.track(new THREE.MeshBasicMaterial({
-      color: 0x3b82f6, transparent: true, opacity: 0.7, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false,
+    const outerGoldMat = this.track(new THREE.MeshBasicMaterial({
+      color: 0xffd000, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending,
     }));
-    const pulseRing = new THREE.Mesh(this.track(new THREE.RingGeometry(0.6, 0.72, 48)), pulseRingMat);
+    const outerGoldRing = new THREE.Mesh(this.track(new THREE.TorusGeometry(1.50, 0.014, 10, 64)), outerGoldMat);
+    outerGoldRing.rotation.x = Math.PI / 2;
+    outerGoldRing.position.y = 0.025;
+
+    const pulseRingMat = this.track(new THREE.MeshBasicMaterial({
+      color: 0xffa500, transparent: true, opacity: 0.75, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false,
+    }));
+    const pulseRing = new THREE.Mesh(this.track(new THREE.RingGeometry(0.65, 0.75, 48)), pulseRingMat);
     pulseRing.rotation.x = -Math.PI / 2;
-    pulseRing.position.y = 0.04;
+    pulseRing.position.y = 0.038;
 
-    const orbsGroup = new THREE.Group();
-    const orbMats = [];
-    const orbGeo = this.track(new THREE.SphereGeometry(0.075, 16, 16));
-    for (let i = 0; i < 6; i++) {
-      const m = this.track(new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0x00e5ff : 0xffd000,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-      }));
-      orbMats.push(m);
-      const orb = new THREE.Mesh(orbGeo, m);
-      const a = (i / 6) * Math.PI * 2;
-      orb.position.set(Math.cos(a) * 0.95, 0.95 + (i % 2) * 0.25, Math.sin(a) * 0.95);
-      orbsGroup.add(orb);
+    // Ground-rising golden-orange particles
+    const pCount = Math.round(90 * this.particleScale());
+    const pPos = new Float32Array(pCount * 3);
+    const pSpeed = new Float32Array(pCount);
+    const pAngle = new Float32Array(pCount);
+    const pRad = new Float32Array(pCount);
+    for (let i = 0; i < pCount; i++) {
+      pAngle[i] = Math.random() * Math.PI * 2;
+      pRad[i] = 0.45 + Math.random() * 1.05;
+      pPos[i * 3] = Math.cos(pAngle[i]) * pRad[i];
+      pPos[i * 3 + 1] = Math.random() * 1.7;
+      pPos[i * 3 + 2] = Math.sin(pAngle[i]) * pRad[i];
+      pSpeed[i] = 0.45 + Math.random() * 0.75;
     }
+    const pGeo = this.track(new THREE.BufferGeometry());
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const pMat = this.track(new THREE.PointsMaterial({
+      color: 0xffc433, size: 0.046, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false,
+    }));
+    const particles = new THREE.Points(pGeo, pMat);
 
-    const kLight = new THREE.PointLight(0x00e5ff, 3.8, 6.0);
-    kLight.position.set(0, 1.0, 0);
-    group.add(baseRing, pulseRing, orbsGroup, kLight);
+    const kLight = new THREE.PointLight(0xff8c00, 1.5, 3.2);
+    kLight.position.set(0, 0.35, 0);
+    group.add(floorDisc, baseRing, outerGoldRing, pulseRing, particles, kLight);
 
     let t = 0;
-    const cyan = new THREE.Color(0x00e5ff);
-    const psyBlue = new THREE.Color(0x3b82f6);
-    const gold = new THREE.Color(0xffd000);
+    const jiuColor = new THREE.Color(0xff8c00);
+    const psyColor = new THREE.Color(0xff6200);
+    const goldColor = new THREE.Color(0xffd000);
 
-    this.updaters.push((dt, fade, _bass, active) => {
+    this.updaters.push((dt, fade, beatBass, active) => {
       t += dt;
       const isJiu = this.kMode === 'jiujitsu';
-      const targetColor = isJiu ? cyan : psyBlue;
+      const targetColor = isJiu ? jiuColor : psyColor;
       baseRingMat.color.lerp(targetColor, Math.min(1, dt * 6));
-      pulseRingMat.color.lerp(isJiu ? cyan : gold, Math.min(1, dt * 6));
+      pulseRingMat.color.lerp(isJiu ? goldColor : jiuColor, Math.min(1, dt * 6));
       kLight.color.lerp(targetColor, Math.min(1, dt * 6));
 
-      orbsGroup.rotation.y += dt * (isJiu ? 1.9 : 0.85);
-      orbsGroup.position.y = Math.sin(t * 2.4) * 0.08;
+      floorDisc.rotation.z += dt * (isJiu ? 0.45 : -0.30);
+      floorMat.opacity = (active ? 0.65 : 0.14) * fade;
+      baseRingMat.opacity = (0.90 + this.modeBurst * 0.15) * fade;
+      outerGoldMat.opacity = (active ? 0.78 - (isJiu ? 0 : 0.25) : 0.15) * fade;
 
-      const wave = (t * (isJiu ? 0.9 : 0.5)) % 1;
-      pulseRing.scale.setScalar(0.5 + wave * (1.25 + this.modeBurst * 0.5));
-      pulseRingMat.opacity = (1 - wave) * 0.8 * (active ? fade : 0.2);
-      baseRingMat.opacity = (0.85 + this.modeBurst * 0.15) * fade;
-      kLight.intensity = (active ? 4.2 + this.modeBurst * 4.0 : 1.0) * fade;
+      const wave = (t * (isJiu ? 0.82 : 0.5)) % 1;
+      const waveScale = isJiu ? (0.48 + wave * (1.25 + this.modeBurst * 0.35)) : (1.55 - wave * 1.05);
+      pulseRing.scale.setScalar(waveScale);
+      pulseRingMat.opacity = Math.sin(wave * Math.PI) * 0.75 * (active ? fade : 0);
+      kLight.intensity = (active ? 1.5 + beatBass * 1.0 + this.modeBurst * 1.2 : 0.35) * fade;
 
-      orbMats.forEach((m, idx) => {
-        m.color.lerp(isJiu ? cyan : (idx % 2 === 0 ? psyBlue : gold), Math.min(1, dt * 6));
-        m.opacity = (active ? 0.95 : 0.35) * fade;
-      });
+      const attr = particles.geometry.attributes.position;
+      for (let i = 0; i < pCount; i++) {
+        pAngle[i] += dt * (isJiu ? 0.75 : -1.1);
+        let py = attr.getY(i) + dt * pSpeed[i] * (isJiu ? 1.15 : 0.65);
+        if (py > 1.75) py = 0.05;
+        attr.setX(i, Math.cos(pAngle[i]) * pRad[i]);
+        attr.setZ(i, Math.sin(pAngle[i]) * pRad[i]);
+        attr.setY(i, py);
+      }
+      attr.needsUpdate = true;
+      pMat.opacity = (active ? 0.88 : 0.16) * fade;
     });
   }
 

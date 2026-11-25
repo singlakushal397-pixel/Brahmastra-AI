@@ -11,16 +11,17 @@
     "Male_Lobby_Shoe_Sc_Professor": "./models/k/Male_Shoe_Sc_Professor_D.png"
   },
   "scaleTarget": 2.05,
-  "cameraOffset": [0, 1.35, 3.65],
-  "cameraTarget": [0, 1.0, 0],
+  "cameraOffset": [0.28, 1.52, 3.65],
+  "cameraTarget": [0, 1.02, 0],
   "animationProfile": "martial_poise",
   "vfxProfile": "master_of_all_dual_mode",
+  "visualIdentityNotes": "Deep red long coat with gold emblem, black inner shirt & chest details, wide belt with metallic buckle & chain, dark trousers, tall black boots with gold buckles, short dark hair.",
   "environmentTheme": {
-    "label": "Dojo Tactical Core",
-    "primaryHex": "#00E5FF",
-    "glowHex": "#3B82F6",
-    "bgTop": "#0d2033",
-    "bgBottom": "#090b10",
-    "rimColor": "0x00e5ff"
+    "label": "Master of All Sanctum",
+    "primaryHex": "#FF8C00",
+    "glowHex": "#FFD000",
+    "bgTop": "#241914",
+    "bgBottom": "#0c0a09",
+    "rimColor": "0xff8c00"
   }
 }

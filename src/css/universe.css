@@ -193,7 +193,7 @@
 }
 
 .k-mode-btn.active {
-  background: #00e5ff;
+  background: linear-gradient(135deg, #ff8c00 0%, #ffd000 100%);
   color: #000;
   border-color: #000;
 }

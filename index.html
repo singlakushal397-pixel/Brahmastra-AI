@@ -909,6 +909,7 @@
           countdownText.textContent = `${remaining.toFixed(1)}s`;
         }
         if (kModeSwitcher && !kModeSwitcher.hidden) {
+          abilityHudTitle.textContent = `MASTER OF ALL · ${kMode === 'psychology' ? 'PSYCHOLOGY MODE' : 'JIU-JITSU MODE'}`;
           kModeSwitcher.querySelectorAll('.k-mode-btn').forEach((btn) => {
             btn.classList.toggle('active', btn.dataset.kmode === kMode);
           });

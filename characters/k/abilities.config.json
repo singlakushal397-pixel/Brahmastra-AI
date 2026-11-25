@@ -3,32 +3,36 @@
   "activeSkill": "Master of All",
   "passiveSkill": "+50 Max EP (250 EP Cap)",
   "abilityType": "Active Hybrid (Dual Mode)",
-  "versionTag": "Verified OB Patch Reference (600% Jiu-Jitsu / +3 EP Psychology)",
+  "versionTag": "Official Garena Reference: ff.garena.com/en/chars/412 (+50 Max EP / 6m +500% Jiu-jitsu)",
   "durationSeconds": 12,
   "cooldownSeconds": 6,
   "maxEp": 250,
+  "maxEpBonus": 50,
+  "visualDemoRadiusMeters": 5,
+  "officialGameplayRangeMeters": 6,
+  "jiujitsuConversionBonusPercent": 500,
   "modes": [
     {
       "id": "jiujitsu",
       "name": "Jiu-jitsu Mode",
-      "colorHex": "#00E5FF",
-      "summary": "Allies within aura gain +600% EP-to-HP conversion rate."
+      "colorHex": "#FF8C00",
+      "summary": "Official 6m range: Allies within 6m gain +500% EP-to-HP conversion rate."
     },
     {
       "id": "psychology",
       "name": "Psychology Mode",
-      "colorHex": "#3B82F6",
-      "summary": "Recovers 3 EP every 1–2 seconds up to 250 Max EP."
+      "colorHex": "#FFB700",
+      "summary": "Recovers EP steadily over time up to 250 Max EP."
     }
   ],
-  "description": "Increases max EP by 50 (250 total) and toggles between Jiu-jitsu Mode (massive ally EP-to-HP conversion) and Psychology Mode (continuous EP regeneration).",
+  "description": "Increases Max EP by 50. Switch between Jiu-jitsu Mode (allies within 6m receive a 500% EP-to-HP conversion rate boost) and Psychology Mode (recovers EP over time).",
   "statsDisplay": [
     "MASTER OF ALL",
-    "250 MAX EP",
-    "JIU-JITSU: +600% CONVERSION",
-    "PSYCHOLOGY: +3 EP / TICK",
-    "6S MODE SWITCH"
+    "MAX EP +50 (250 CAP)",
+    "OFFICIAL RANGE: 6M (+500% EP→HP)",
+    "VISUAL DEMO RING: 5M SCALE",
+    "JIU-JITSU / PSYCHOLOGY"
   ],
-  "verifiedPatchNote": "Recent Free Fire updates buffed Jiu-Jitsu Mode conversion to +600% within ally aura while retaining Psychology Mode's +3 EP regeneration up to 250 EP (6s switch cooldown).",
-  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+  "verifiedPatchNote": "Official Garena Free Fire K profile (ff.garena.com/en/chars/412): Max EP +50; Jiu-jitsu Mode grants +500% EP conversion within 6m; Psychology Mode recovers EP over time. Note: The 5m ring shown is the requested visual demonstration scale.",
+  "disclaimer": "Interactive 3D website visual demonstration (5m display ring) — does not modify the Free Fire game."
 }

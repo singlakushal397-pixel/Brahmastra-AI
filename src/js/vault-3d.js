@@ -4,6 +4,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { AbilityVFXManager } from './ability-vfx.js';
 import { loadKellyRiggedModel, updateKellyAnimation } from './kelly-rig.js';
+import { loadKRiggedModel, updateKAnimation } from './k-rig.js';
 
 /**
  * 3D Character Vault Renderer with:
@@ -205,6 +206,8 @@ export class CharacterVault3D {
       let root;
       if (char.id === 'kelly') {
         root = await loadKellyRiggedModel(char, this.texLoader);
+      } else if (char.id === 'k') {
+        root = await loadKRiggedModel(char, this.texLoader);
       } else {
         if (char.modelType === 'placeholder' || !char.modelPath) {
           root = this._createPlaceholderModel(char.color || 0xa855f7);
@@ -383,6 +386,17 @@ export class CharacterVault3D {
         });
         if (this.autoSpin && !this.reducedMotion) {
           this.activeModel.rotation.y += dt * (abilityOn ? 0.25 : 0.45) + beatBass * 0.01;
+        }
+      } else if (this.activeChar?.id === 'k' && this.activeModel.userData.kRig) {
+        updateKAnimation(this.activeModel, dt, {
+          isActive: abilityOn,
+          kMode: this.vfx.kMode,
+          isSpeaking: this.isSpeaking,
+          beatBass,
+          reducedMotion: this.reducedMotion,
+        });
+        if (this.autoSpin && !this.reducedMotion) {
+          this.activeModel.rotation.y += dt * (abilityOn ? 0.22 : 0.35) + beatBass * 0.008;
         }
       } else {
         // Subtle breathing + speaking micro-gestures
