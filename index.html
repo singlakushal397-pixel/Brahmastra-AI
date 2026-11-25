@@ -512,17 +512,6 @@
 
     <!-- 9. Operator Quick Dock -->
     <div class="op-dock" id="opDock"></div>
-
-    <!-- 10. Neo-Brutalist Beat Deck HUD -->
-    <div class="beat-deck" id="beatDeck">
-      <div class="beat-transport" id="beatTransport" aria-label="Beat player controls"></div>
-      <canvas class="beat-viz" id="beatViz" width="110" height="28"></canvas>
-      <div class="beat-info">
-        <div class="beat-title" id="beatStatus">FINAL BEAT.MP3 — READY</div>
-        <div class="beat-bar" id="beatBar"><div class="beat-fill" id="beatFill"></div></div>
-      </div>
-      <div class="beat-led" id="beatLed" title="Bass Pulse"></div>
-    </div>
   </main>
 
   <!-- 11. 3D Character Vault & AI Chat Modal -->
@@ -648,7 +637,7 @@
     import { loadCharacterCatalog } from './src/js/character-store.js';
     import { CharacterVault3D } from './src/js/vault-3d.js';
     import { CharacterAIChat } from './src/js/ai-chat.js';
-    import { initBeatPlayer } from './src/js/beat-player.js';
+    import { initBackgroundBeat } from './src/js/beat-player.js';
 
     // =========================================================================
     // 1. MODULAR FREE FIRE CHARACTER UNIVERSE (LOADED FROM /characters/)
@@ -730,28 +719,13 @@
     }
 
     // =========================================================================
-    // 2. CONFIG-DRIVEN BEAT PLAYER + WEB AUDIO ANALYSER
+    // 2. BACKGROUND BEAT PLAYER + WEB AUDIO ANALYSER (FINAL BEAT.MP3)
     // =========================================================================
     let beatBass = 0;
-    let beatController = null;
-    initBeatPlayer({
-      configUrl: './audio/beat-player.config.json',
-      transportEl: document.getElementById('beatTransport'),
-      statusEl: document.getElementById('beatStatus'),
-      fillEl: document.getElementById('beatFill'),
-      barEl: document.getElementById('beatBar'),
-      ledEl: document.getElementById('beatLed'),
-      vizCanvas: document.getElementById('beatViz'),
-    }).then((ctrl) => {
-      beatController = ctrl;
-    }).catch((err) => {
-      console.error('Beat player init failed:', err);
-    });
+    const beatController = initBackgroundBeat('./audio/Final beat.mp3');
 
     function updateBeatVisualizer() {
-      if (beatController) {
-        beatBass = beatController.updateFrame();
-      }
+      beatBass = beatController.updateFrame();
     }
 
     // =========================================================================
