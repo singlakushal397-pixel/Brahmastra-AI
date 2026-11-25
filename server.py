@@ -1,4 +1,4 @@
-"""Secure backend & static asset server for Embers Free Fire 3D AI Universe.
+"""Secure backend & static asset server for Brahmastra Free Fire 3D AI Universe.
 
 Provides:
 - Official OpenAI Python SDK & Responses API streaming (`client.responses.create`)
@@ -40,7 +40,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
-logger = logging.getLogger("embers_ff_server")
+logger = logging.getLogger("brahmastra_ff_server")
 
 HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", "8080"))
@@ -919,5 +919,5 @@ def create_app(
 
 if __name__ == "__main__":
     flask_app = create_app()
-    logger.info("Embers Free Fire 3D AI Server listening on http://%s:%s", HOST, PORT)
+    logger.info("Brahmastra Free Fire 3D AI Server listening on http://%s:%s", HOST, PORT)
     flask_app.run(host=HOST, port=PORT, threaded=True)

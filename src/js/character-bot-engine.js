@@ -1,5 +1,5 @@
 /**
- * Automated In-Character Dialogue Engine for Embers Free Fire Characters.
+ * Automated In-Character Dialogue Engine for Brahmastra Free Fire Characters.
  * Works instantaneously without external API keys or server failures.
  * Uses each character's loaded profile, abilities, personality, and topic alignment
  * to generate concise, character-authentic responses and character summaries.

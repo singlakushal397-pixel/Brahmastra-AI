@@ -1,4 +1,4 @@
-"""Automated backend test suite for Embers Free Fire 3D AI Universe (Responses API + Encrypted Persistence)."""
+"""Automated backend test suite for Brahmastra Free Fire 3D AI Universe (Responses API + Encrypted Persistence)."""
 
 from __future__ import annotations
 

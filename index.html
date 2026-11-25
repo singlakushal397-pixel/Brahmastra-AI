@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Embers Foundry × Free Fire — 3D Character Vault & AI Chat</title>
+  <title>Brahmastra × Free Fire — 3D Character Vault & AI Chat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet" />
@@ -106,12 +106,12 @@
       height: calc(810 * var(--s)); overflow: hidden; pointer-events: none; z-index: 3;
     }
     .word {
-      position: absolute; left: calc(-44 * var(--s)); top: calc(452 * var(--s));
+      position: absolute; left: calc(16 * var(--s)); top: calc(528 * var(--s));
       font-family: "Archivo Wide", sans-serif; font-stretch: 125%; font-weight: 600;
-      font-size: calc(340.6 * var(--s)); line-height: 1; letter-spacing: -.035em;
+      font-size: calc(194 * var(--s)); line-height: 1; letter-spacing: -.03em;
       color: var(--light); white-space: nowrap;
     }
-    .word > span { display: inline-block; transform: scaleX(1.05); transform-origin: top left; }
+    .word > span { display: inline-block; transform: scaleX(1.02); transform-origin: top left; }
     .word i { display: inline-block; font-style: normal; }
     .mounds {
       position: absolute; left: 0; bottom: 0; width: 100%;
@@ -440,7 +440,7 @@
     <!-- 4. Foreground Word + Rock Mounds -->
     <div class="fg" id="fg">
       <div class="word" id="bigWord">
-        <span><i>E</i><i>m</i><i>b</i><i>e</i><i>r</i><i>s</i></span>
+        <span><i>B</i><i>r</i><i>a</i><i>h</i><i>m</i><i>a</i><i>s</i><i>t</i><i>r</i><i>a</i></span>
       </div>
       <img class="mounds mound-l" id="moundL" crossorigin="anonymous"
            src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_071757_11ac0e5d-35f5-4e49-bdab-2cee6a7a2ae3.png&w=1344&q=85" alt="" />
@@ -450,7 +450,7 @@
 
     <!-- 5. Nav -->
     <header class="nav">
-      <a class="logo" href="#top" aria-label="Embers Foundry home" onclick="window.goState(0);return false;">
+      <a class="logo" href="#top" aria-label="Brahmastra home" onclick="window.goState(0);return false;">
         <svg viewBox="0 0 56 56" fill="none">
           <circle cx="28" cy="28" r="26" stroke="#EDE3DA" stroke-width="1.6"/>
           <circle cx="28" cy="28" r="21" stroke="#EDE3DA" stroke-width="0.8" stroke-dasharray="1.5 3"/>
@@ -1000,7 +1000,7 @@
     document.getElementById('btnReset').onclick = () => vault3d.resetCamera();
 
     // =========================================================================
-    // 5. EMBERS FOUNDRY RUNTIME: MOUNDS CLEANUP, CAMERA TRANSITION & LOAD TIMINGS
+    // 5. BRAHMASTRA RUNTIME: MOUNDS CLEANUP, CAMERA TRANSITION & LOAD TIMINGS
     // =========================================================================
     const stage = document.getElementById('stage');
     const plateH1 = document.getElementById('plateH1');
