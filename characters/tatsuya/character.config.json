@@ -3,14 +3,14 @@
   "name": "TATSUYA",
   "displayName": "Tatsuya",
   "role": "REBEL ASSAULT",
-  "color": "0xff5500",
-  "accentHex": "#FF5500",
-  "secondaryHex": "#FF9500",
+  "color": "0xff1e6e",
+  "accentHex": "#FF1E6E",
+  "secondaryHex": "#00E5FF",
   "bgPos": "100% 0%",
   "status": "active",
-  "tagline": "Street-born entry fragger built for explosive double-dash close-quarters pushes.",
-  "biography": "A fearless, street-smart rebel with explosive reflexes. Tatsuya thrives in close-quarters chaos, chaining rapid dashes to break enemy lines before they can react.",
-  "verifiedVersion": "Free Fire OB4x / Free Fire India Reference",
+  "tagline": "Street-born entry fragger built for explosive 0.3s Rebel Rush forward dashes.",
+  "biography": "A fearless, agile street rebel wearing his signature red-and-magenta striped jacket with cyan lapels, lightning pendant, cargo trousers, and red knee wrap. Tatsuya uses Rebel Rush to burst forward in a flash of neon speed.",
+  "verifiedVersion": "Official Garena Free Fire Tatsuya Profile (ff.garena.com/en/chars/602)",
   "stats": {
     "Speed": 98,
     "Healing": 35,
@@ -19,8 +19,8 @@
   },
   "suggestedPrompts": [
     "How do you use Rebel Rush effectively?",
+    "Tell me about your 0.3s dash and cooldown reset.",
     "What's your close-quarters strategy?",
-    "How do you handle pressure?",
-    "Tell me about your fighting style."
+    "How do you handle pressure?"
   ]
 }

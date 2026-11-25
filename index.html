@@ -559,6 +559,10 @@
               <button type="button" class="k-mode-btn active" data-kmode="jiujitsu">Jiu-jitsu Mode</button>
               <button type="button" class="k-mode-btn" data-kmode="psychology">Psychology Mode</button>
             </div>
+            <div class="tatsuya-controls" id="tatsuyaControls" hidden>
+              <button type="button" class="k-mode-btn active" id="tatsuyaRunBtn">🏃 Running: ON</button>
+              <span class="tatsuya-cd-pill" id="tatsuyaCdBadge">CD: 90s · DEMO READY</span>
+            </div>
           </div>
         </div>
         <canvas id="char3dCanvas"></canvas>
@@ -709,7 +713,7 @@
         chip.className = 'op-chip';
         chip.dataset.id = c.id;
         chip.textContent = c.name;
-        chip.onclick = () => window.openCharacter(c.id, 'dossier', c.id === 'kelly');
+        chip.onclick = () => window.openCharacter(c.id, 'dossier', c.id === 'kelly' || c.id === 'tatsuya');
         opDock.appendChild(chip);
       });
 
@@ -884,6 +888,10 @@
     const abilityHudTitle = document.getElementById('abilityHudTitle');
     const abilityHudLines = document.getElementById('abilityHudLines');
     const kModeSwitcher = document.getElementById('kModeSwitcher');
+    const tatsuyaControls = document.getElementById('tatsuyaControls');
+    const tatsuyaRunBtn = document.getElementById('tatsuyaRunBtn');
+    const tatsuyaCdBadge = document.getElementById('tatsuyaCdBadge');
+    let tatsuyaRunningState = true;
 
     const vault3d = new CharacterVault3D({
       canvas: charCanvas,
@@ -897,16 +905,23 @@
 
     if (vault3d.vfx) {
       vault3d.vfx.onStateChange = ({ isActive, remaining, duration, progress, kMode }) => {
-        const isKelly = ALL_CHARACTERS[activeCharIdx]?.id === 'kelly';
+        const curId = ALL_CHARACTERS[activeCharIdx]?.id;
+        const isKelly = curId === 'kelly';
+        const isTatsuya = curId === 'tatsuya';
         btnActivateSkill.classList.toggle('active', isActive);
         btnActivateSkill.textContent = isKelly
           ? (isActive ? '■ STOP RUNNING' : '🏃 RUN / DEADLY VELOCITY')
-          : (isActive ? '■ STOP ABILITY' : '⚡ ACTIVATE ABILITY');
+          : isTatsuya
+            ? (isActive ? '⚡ DASHING (0.3S)...' : '⚡ REBEL RUSH (0.3S DASH)')
+            : (isActive ? '■ STOP ABILITY' : '⚡ ACTIVATE ABILITY');
         abilityCountdown.hidden = !isActive;
         if (isActive) {
           const circumference = 94.25;
           countdownCircle.style.strokeDashoffset = String(circumference * progress);
-          countdownText.textContent = `${remaining.toFixed(1)}s`;
+          countdownText.textContent = isTatsuya ? '0.3s DASH' : `${remaining.toFixed(1)}s`;
+        }
+        if (isTatsuya && tatsuyaCdBadge) {
+          tatsuyaCdBadge.textContent = isActive ? 'REBEL RUSH ACTIVE · 0.3s' : 'CD: 90s · DEMO REPLAY READY';
         }
         if (kModeSwitcher && !kModeSwitcher.hidden) {
           abilityHudTitle.textContent = `MASTER OF ALL · ${kMode === 'psychology' ? 'PSYCHOLOGY MODE' : 'JIU-JITSU MODE'}`;
@@ -918,8 +933,23 @@
     }
 
     btnActivateSkill.onclick = () => {
-      if (vault3d.vfx) vault3d.vfx.toggle();
+      if (!vault3d.vfx) return;
+      if (ALL_CHARACTERS[activeCharIdx]?.id === 'tatsuya') {
+        vault3d.vfx.activate(1.6);
+        vault3d.triggerTatsuyaDash();
+      } else {
+        vault3d.vfx.toggle();
+      }
     };
+
+    if (tatsuyaRunBtn) {
+      tatsuyaRunBtn.onclick = () => {
+        tatsuyaRunningState = !tatsuyaRunningState;
+        tatsuyaRunBtn.classList.toggle('active', tatsuyaRunningState);
+        tatsuyaRunBtn.textContent = `🏃 Running: ${tatsuyaRunningState ? 'ON' : 'OFF'}`;
+        vault3d.setTatsuyaRun(tatsuyaRunningState);
+      };
+    }
 
     if (kModeSwitcher) {
       kModeSwitcher.querySelectorAll('.k-mode-btn').forEach((btn) => {
@@ -989,14 +1019,27 @@
       const lines = c.abilities?.statsDisplay || [c.skill];
       abilityHudLines.innerHTML = lines.map((line) => `<span>${line}</span>`).join('');
       if (kModeSwitcher) kModeSwitcher.hidden = c.id !== 'k';
-      btnActivateSkill.textContent = c.id === 'kelly' ? '🏃 RUN / DEADLY VELOCITY' : '⚡ ACTIVATE ABILITY';
+      if (tatsuyaControls) tatsuyaControls.hidden = c.id !== 'tatsuya';
+      btnActivateSkill.textContent = c.id === 'kelly'
+        ? '🏃 RUN / DEADLY VELOCITY'
+        : c.id === 'tatsuya'
+          ? '⚡ REBEL RUSH (0.3S DASH)'
+          : '⚡ ACTIVATE ABILITY';
 
       document.querySelectorAll('.op-chip').forEach((el) => el.classList.toggle('active', el.dataset.id === c.id));
       vaultModal.classList.add('open');
       switchVaultTab(initialTab);
       vault3d.resize();
       vault3d.loadCharacter(c).then(() => {
-        if (autoActivate && ALL_CHARACTERS[activeCharIdx]?.id === c.id) {
+        if (ALL_CHARACTERS[activeCharIdx]?.id !== c.id) return;
+        if (c.id === 'tatsuya') {
+          tatsuyaRunningState = autoActivate || tatsuyaRunningState;
+          if (tatsuyaRunBtn) {
+            tatsuyaRunBtn.classList.toggle('active', tatsuyaRunningState);
+            tatsuyaRunBtn.textContent = `🏃 Running: ${tatsuyaRunningState ? 'ON' : 'OFF'}`;
+          }
+          vault3d.setTatsuyaRun(tatsuyaRunningState);
+        } else if (autoActivate) {
           vault3d.vfx?.activate(c.id === 'kelly' ? 60 : undefined);
         }
       });

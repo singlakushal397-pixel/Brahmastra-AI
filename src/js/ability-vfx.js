@@ -740,46 +740,163 @@ export class AbilityVFXManager {
   }
 
   // ---------------------------------------------------------------------------
-  // 6. TATSUYA — REBEL RUSH (DOUBLE DASH EMBER BURSTS)
+  // 6. TATSUYA — REBEL RUSH (BRIGHT MAGENTA/RED + CYAN 3D NEON RAYS & TRAILS)
   // ---------------------------------------------------------------------------
   _buildTatsuyaRebelRush() {
     const group = new THREE.Group();
     this.rootGroup.add(group);
 
+    // Ground cyberpunk dash base ring & directional chevron aura
     const ringMat = this.track(new THREE.MeshBasicMaterial({
-      color: 0xff5500, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending,
+      color: 0xff1e6e, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending,
     }));
-    const dashRing = new THREE.Mesh(this.track(new THREE.TorusGeometry(1.05, 0.03, 10, 56)), ringMat);
+    const dashRing = new THREE.Mesh(this.track(new THREE.TorusGeometry(1.08, 0.028, 12, 64)), ringMat);
     dashRing.rotation.x = Math.PI / 2;
     dashRing.position.y = 0.03;
 
-    const dashLight = new THREE.PointLight(0xff5500, 4.0, 5.5);
-    dashLight.position.set(0, 0.9, 0);
+    const cyanRingMat = this.track(new THREE.MeshBasicMaterial({
+      color: 0x00e5ff, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending,
+    }));
+    const cyanRing = new THREE.Mesh(this.track(new THREE.TorusGeometry(1.26, 0.014, 10, 64)), cyanRingMat);
+    cyanRing.rotation.x = Math.PI / 2;
+    cyanRing.position.y = 0.025;
 
-    const streakGeo = this.track(new THREE.BoxGeometry(0.03, 0.03, 0.72));
-    const streaks = [];
-    for (let i = 0; i < 18; i++) {
-      const m = this.track(new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0xff5500 : 0xffaa33,
+    const dashLight = new THREE.PointLight(0xff1e6e, 3.2, 5.5);
+    dashLight.position.set(0, 1.0, -0.4);
+    const cyanLight = new THREE.PointLight(0x00e5ff, 2.4, 5.0);
+    cyanLight.position.set(0, 1.1, 0.5);
+    group.add(dashRing, cyanRing, dashLight, cyanLight);
+
+    // 1. Multi-layered 3D Curved Neon Spline Rays extending behind Tatsuya (-Z)
+    const rayConfigs = [
+      // Left & right shoulder/torso primary magenta-red neon rays + white-hot core
+      { pts: [[-0.26, 1.48, 0.15], [-0.42, 1.38, -0.65], [-0.55, 1.25, -1.75], [-0.62, 1.15, -2.85]], color: 0xff1a66, radius: 0.030 },
+      { pts: [[0.26, 1.48, 0.15], [0.42, 1.38, -0.65], [0.55, 1.25, -1.75], [0.62, 1.15, -2.85]], color: 0xff1a66, radius: 0.030 },
+      // Mid-waist bright red neon rays
+      { pts: [[-0.18, 1.08, 0.20], [-0.30, 1.02, -0.55], [-0.40, 0.96, -1.65], [-0.48, 0.92, -2.75]], color: 0xff2233, radius: 0.026 },
+      { pts: [[0.18, 1.08, 0.20], [0.30, 1.02, -0.55], [0.40, 0.96, -1.65], [0.48, 0.92, -2.75]], color: 0xff2233, radius: 0.026 },
+      // Cyan & electric-blue secondary sweeping rays
+      { pts: [[-0.32, 1.28, 0.10], [-0.52, 1.18, -0.75], [-0.70, 1.05, -1.90], [-0.82, 0.95, -2.95]], color: 0x00e5ff, radius: 0.022 },
+      { pts: [[0.32, 1.28, 0.10], [0.52, 1.18, -0.75], [0.70, 1.05, -1.90], [0.82, 0.95, -2.95]], color: 0x00e5ff, radius: 0.022 },
+      // Knee & sneaker level fast ground rays
+      { pts: [[-0.18, 0.38, 0.18], [-0.26, 0.30, -0.70], [-0.35, 0.24, -1.85], [-0.42, 0.20, -2.90]], color: 0x00a2ff, radius: 0.022 },
+      { pts: [[0.18, 0.38, 0.18], [0.26, 0.30, -0.70], [0.35, 0.24, -1.85], [0.42, 0.20, -2.90]], color: 0xff0055, radius: 0.022 },
+    ];
+
+    const neonRays = [];
+    for (let i = 0; i < rayConfigs.length; i++) {
+      const cfg = rayConfigs[i];
+      const curve = new THREE.CatmullRomCurve3(cfg.pts.map((p) => new THREE.Vector3(...p)));
+
+      // Outer bright colored neon tube
+      const outerGeo = this.track(new THREE.TubeGeometry(curve, 28, cfg.radius, 8, false));
+      const outerMat = this.track(new THREE.MeshBasicMaterial({
+        color: cfg.color,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0,
         blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }));
+      const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+
+      // Inner white-hot accent core
+      const coreGeo = this.track(new THREE.TubeGeometry(curve, 28, cfg.radius * 0.36, 6, false));
+      const coreMat = this.track(new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }));
+      const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+
+      group.add(outerMesh, coreMesh);
+      neonRays.push({ outerMesh, outerMat, coreMesh, coreMat, phase: i * 0.35 });
+    }
+
+    // 2. Fast-moving directional light streaks & glowing fragments
+    const streakCount = Math.round(44 * this.particleScale());
+    const streaks = [];
+    const streakGeo = this.track(new THREE.BoxGeometry(0.024, 0.024, 0.92));
+    for (let i = 0; i < streakCount; i++) {
+      const color = i % 5 === 0 ? 0xffffff : i % 3 === 0 ? 0x00e5ff : i % 2 === 0 ? 0xff1e6e : 0xff2233;
+      const m = this.track(new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.92,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
       }));
       const mesh = new THREE.Mesh(streakGeo, m);
-      mesh.position.set((Math.random() - 0.5) * 1.5, 0.2 + Math.random() * 1.4, (Math.random() - 0.5) * 2.4);
+      const side = i % 2 === 0 ? 1 : -1;
+      mesh.position.set(
+        side * (0.16 + Math.random() * 0.72),
+        0.15 + Math.random() * 1.55,
+        0.5 - Math.random() * 3.4
+      );
       group.add(mesh);
-      streaks.push({ mesh, mat: m, speed: 4.5 + Math.random() * 2.5 });
+      streaks.push({ mesh, mat: m, speed: 6.5 + Math.random() * 5.0 });
     }
-    group.add(dashRing, dashLight);
 
+    // 3. Trailing energy sparks
+    const pCount = Math.round(90 * this.particleScale());
+    const pPos = new Float32Array(pCount * 3);
+    const pVel = new Float32Array(pCount);
+    for (let i = 0; i < pCount; i++) {
+      pPos[i * 3] = (Math.random() - 0.5) * 1.4;
+      pPos[i * 3 + 1] = 0.1 + Math.random() * 1.75;
+      pPos[i * 3 + 2] = 0.4 - Math.random() * 3.2;
+      pVel[i] = 4.0 + Math.random() * 4.5;
+    }
+    const pGeo = this.track(new THREE.BufferGeometry());
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const pMat = this.track(new THREE.PointsMaterial({
+      color: 0xff55aa,
+      size: 0.048,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }));
+    const sparks = new THREE.Points(pGeo, pMat);
+    group.add(sparks);
+
+    let t = 0;
     this.updaters.push((dt, fade, _bass, active) => {
-      ringMat.opacity = 0.9 * fade;
-      dashLight.intensity = (active ? 4.8 : 0.9) * fade;
-      for (const s of streaks) {
-        s.mesh.position.z -= dt * s.speed * (active ? 1.8 : 0.35);
-        if (s.mesh.position.z < -1.6) s.mesh.position.z = 1.6;
-        s.mat.opacity = (active ? 0.9 : 0.15) * fade;
+      t += dt;
+      // Peak intensity during the 0.3s Rebel Rush dash window (0.14s -> 0.52s), smooth fade-out after
+      const dashPulse = active
+        ? (this.elapsed < 0.14 ? this.elapsed / 0.14 : this.elapsed < 0.65 ? 1.0 : Math.max(0.18, 1 - (this.elapsed - 0.65) / 0.95))
+        : 0;
+
+      ringMat.opacity = (active ? 0.95 : 0.25) * fade;
+      cyanRingMat.opacity = (active ? 0.85 * dashPulse + 0.15 : 0.15) * fade;
+      dashLight.intensity = (active ? 4.5 * dashPulse + 1.2 : 0.4) * fade;
+      cyanLight.intensity = (active ? 3.2 * dashPulse + 0.8 : 0.3) * fade;
+
+      for (const ray of neonRays) {
+        const flicker = 0.82 + Math.sin(t * 28 + ray.phase) * 0.18;
+        ray.outerMat.opacity = (active ? 0.92 * dashPulse * flicker : 0.0) * fade;
+        ray.coreMat.opacity = (active ? 0.96 * dashPulse * flicker : 0.0) * fade;
+        const zStretch = active ? 0.65 + dashPulse * 0.65 : 0.4;
+        ray.outerMesh.scale.set(1, 1, zStretch);
+        ray.coreMesh.scale.set(1, 1, zStretch);
       }
+
+      for (const s of streaks) {
+        s.mesh.position.z -= dt * s.speed * (active ? 2.4 * Math.max(0.4, dashPulse) : 0.25);
+        if (s.mesh.position.z < -3.0) s.mesh.position.z = 0.6;
+        s.mat.opacity = (active ? 0.95 * Math.max(0.25, dashPulse) : 0.08) * fade;
+      }
+
+      const attr = sparks.geometry.attributes.position;
+      for (let i = 0; i < pCount; i++) {
+        let pz = attr.getZ(i) - dt * pVel[i] * (active ? 2.0 : 0.2);
+        if (pz < -3.0) pz = 0.5;
+        attr.setZ(i, pz);
+      }
+      attr.needsUpdate = true;
+      pMat.opacity = (active ? 0.9 * Math.max(0.2, dashPulse) : 0.0) * fade;
     });
   }
 

@@ -198,6 +198,34 @@
   border-color: #000;
 }
 
+.tatsuya-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.tatsuya-controls[hidden] {
+  display: none;
+}
+
+.tatsuya-controls .k-mode-btn.active {
+  background: linear-gradient(135deg, #ff1e6e 0%, #00e5ff 100%);
+  color: #000;
+  border-color: #000;
+}
+
+.tatsuya-cd-pill {
+  background: rgba(8, 12, 28, 0.9);
+  color: #00e5ff;
+  border: 1.5px solid #ff1e6e;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 /* WebGL / Asset Fallback Card */
 .vault-fallback {
   position: absolute;

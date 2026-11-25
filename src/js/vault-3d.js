@@ -5,6 +5,12 @@ import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { AbilityVFXManager } from './ability-vfx.js';
 import { loadKellyRiggedModel, updateKellyAnimation } from './kelly-rig.js';
 import { loadKRiggedModel, updateKAnimation } from './k-rig.js';
+import {
+  loadTatsuyaRiggedModel,
+  setTatsuyaRunning,
+  triggerTatsuyaRebelRush,
+  updateTatsuyaAnimation,
+} from './tatsuya-rig.js';
 
 /**
  * 3D Character Vault Renderer with:
@@ -208,6 +214,8 @@ export class CharacterVault3D {
         root = await loadKellyRiggedModel(char, this.texLoader);
       } else if (char.id === 'k') {
         root = await loadKRiggedModel(char, this.texLoader);
+      } else if (char.id === 'tatsuya') {
+        root = await loadTatsuyaRiggedModel(char, this.texLoader);
       } else {
         if (char.modelType === 'placeholder' || !char.modelPath) {
           root = this._createPlaceholderModel(char.color || 0xa855f7);
@@ -365,6 +373,18 @@ export class CharacterVault3D {
     });
   }
 
+  setTatsuyaRun(running) {
+    if (this.activeChar?.id === 'tatsuya' && this.activeModel) {
+      setTatsuyaRunning(this.activeModel, running);
+    }
+  }
+
+  triggerTatsuyaDash() {
+    if (this.activeChar?.id === 'tatsuya' && this.activeModel) {
+      triggerTatsuyaRebelRush(this.activeModel);
+    }
+  }
+
   renderFrame(dt, beatBass = 0) {
     if (!this.webglAvailable) return;
 
@@ -397,6 +417,16 @@ export class CharacterVault3D {
         });
         if (this.autoSpin && !this.reducedMotion) {
           this.activeModel.rotation.y += dt * (abilityOn ? 0.22 : 0.35) + beatBass * 0.008;
+        }
+      } else if (this.activeChar?.id === 'tatsuya' && this.activeModel.userData.tatsuyaRig) {
+        updateTatsuyaAnimation(this.activeModel, dt, {
+          isSkillActive: abilityOn,
+          isSpeaking: this.isSpeaking,
+          beatBass,
+          reducedMotion: this.reducedMotion,
+        });
+        if (this.autoSpin && !this.reducedMotion && !abilityOn) {
+          this.activeModel.rotation.y += dt * 0.35 + beatBass * 0.008;
         }
       } else {
         // Subtle breathing + speaking micro-gestures

@@ -2,19 +2,21 @@
   "id": "tatsuya",
   "activeSkill": "Rebel Rush",
   "passiveSkill": null,
-  "abilityType": "Active Rush (2 Charges)",
-  "versionTag": "Verified OB Patch Reference (0.3s Dash / 2 Charges)",
-  "durationSeconds": 4,
+  "abilityType": "Rapid Forward Dash",
+  "versionTag": "Official Garena Reference: ff.garena.com/en/chars/602 (0.3s Dash / 90s Cooldown)",
+  "durationSeconds": 1.6,
+  "dashDurationSeconds": 0.3,
   "cooldownSeconds": 90,
-  "charges": 2,
-  "description": "Dashes forward at extreme speed for 0.3s; stores up to 2 consecutive charges with knockdown cooldown reset mechanics.",
+  "cooldownResetWindowSeconds": 10,
+  "description": "Rushes forward quickly for 0.3 seconds. Cooldown: 90 seconds (resets if an enemy is knocked down within 10 seconds after skill release).",
   "statsDisplay": [
-    "REBEL RUSH",
-    "0.3S RAPID DASH",
-    "2 STORED CHARGES",
-    "ENTRY FRAGGER",
-    "KNOCK RESET"
+    "CHARACTER: TATSUYA",
+    "ACTIVE SKILL: REBEL RUSH",
+    "SKILL TYPE: RAPID FORWARD DASH",
+    "DASH DURATION: 0.3 SECONDS",
+    "COOLDOWN: 90 SECONDS",
+    "RESET: KNOCK ENEMY WITHIN 10S"
   ],
-  "verifiedPatchNote": "Verified Free Fire Tatsuya stats: 0.3s rapid forward dash, up to 2 stored charges, knockdown within 10s reduces/resets cooldown.",
-  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+  "verifiedPatchNote": "Official Garena Free Fire Tatsuya profile (ff.garena.com/en/chars/602): 0.3s rapid forward dash, 90s cooldown, resets on enemy knockdown within 10s of release. Website replay is an interactive visual demo.",
+  "disclaimer": "Interactive 3D website visual demonstration (replayable demo mode) — does not modify Free Fire gameplay."
 }

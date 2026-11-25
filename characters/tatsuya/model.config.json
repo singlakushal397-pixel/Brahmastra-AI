@@ -10,16 +10,17 @@
     "mat_34": "./models/tatsuya/shoe.png"
   },
   "scaleTarget": 2.05,
-  "cameraOffset": [0, 1.35, 3.65],
+  "cameraOffset": [0.45, 1.16, 3.85],
   "cameraTarget": [0, 1.0, 0],
   "animationProfile": "rebel_dash",
   "vfxProfile": "rebel_rush_ember_dash",
+  "visualIdentityNotes": "Red-black-magenta striped jacket with cyan borders, white inner shirt, lightning pendant necklace, arm & leg tattoos, dark cargo trousers, red knee bandana, dark sneakers with red & cyan accents, dark hair with silver highlights.",
   "environmentTheme": {
-    "label": "Foundry Street Alley",
-    "primaryHex": "#FF5500",
-    "glowHex": "#FF9500",
-    "bgTop": "#2b1407",
-    "bgBottom": "#0c0907",
-    "rimColor": "0xff5500"
+    "label": "Neon City Sector",
+    "primaryHex": "#FF1E6E",
+    "glowHex": "#00E5FF",
+    "bgTop": "#131c3d",
+    "bgBottom": "#070914",
+    "rimColor": "0x00e5ff"
   }
 }
