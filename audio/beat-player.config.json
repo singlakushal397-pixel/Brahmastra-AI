@@ -1,0 +1,20 @@
+{
+  "trackSrc": "./audio/Final beat.mp3",
+  "trackTitle": "FINAL BEAT.MP3",
+  "loop": true,
+  "autoplayOnOpen": true,
+  "startAtSeconds": 0,
+  "seekStepSeconds": 10,
+  "theme": {
+    "accent": "#6B5CE7",
+    "accentBright": "#7F72FF",
+    "iconLight": "#FFFFFF"
+  },
+  "controls": [
+    { "action": "rewind", "label": "Rewind 10s", "size": "sm", "variant": "outline" },
+    { "action": "reverse", "label": "Play Reverse", "size": "md", "variant": "outline" },
+    { "action": "toggle", "label": "Play / Pause", "size": "lg", "variant": "solid" },
+    { "action": "forward", "label": "Play Forward", "size": "md", "variant": "outline" },
+    { "action": "fastforward", "label": "Forward 10s", "size": "sm", "variant": "outline" }
+  ]
+}

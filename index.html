@@ -515,17 +515,13 @@
 
     <!-- 10. Neo-Brutalist Beat Deck HUD -->
     <div class="beat-deck" id="beatDeck">
-      <button class="beat-btn" id="beatPlayBtn">▶ PLAY BEAT</button>
+      <div class="beat-transport" id="beatTransport" aria-label="Beat player controls"></div>
       <canvas class="beat-viz" id="beatViz" width="110" height="28"></canvas>
       <div class="beat-info">
         <div class="beat-title" id="beatStatus">FINAL BEAT.MP3 — READY</div>
         <div class="beat-bar" id="beatBar"><div class="beat-fill" id="beatFill"></div></div>
       </div>
       <div class="beat-led" id="beatLed" title="Bass Pulse"></div>
-      <label class="beat-load" title="Load custom MP3 if offline">
-        MP3
-        <input type="file" id="beatFileInput" accept="audio/*" hidden />
-      </label>
     </div>
   </main>
 
@@ -652,6 +648,7 @@
     import { loadCharacterCatalog } from './src/js/character-store.js';
     import { CharacterVault3D } from './src/js/vault-3d.js';
     import { CharacterAIChat } from './src/js/ai-chat.js';
+    import { initBeatPlayer } from './src/js/beat-player.js';
 
     // =========================================================================
     // 1. MODULAR FREE FIRE CHARACTER UNIVERSE (LOADED FROM /characters/)
@@ -733,90 +730,27 @@
     }
 
     // =========================================================================
-    // 2. BEAT PLAYER + WEB AUDIO ANALYSER (FINAL BEAT.MP3)
+    // 2. CONFIG-DRIVEN BEAT PLAYER + WEB AUDIO ANALYSER
     // =========================================================================
-    const audio = new Audio('./audio/Final beat.mp3');
-    audio.loop = true;
-    audio.crossOrigin = 'anonymous';
-
-    let audioCtx, analyser, freqData, beatBass = 0;
-    const beatPlayBtn = document.getElementById('beatPlayBtn');
-    const beatStatus = document.getElementById('beatStatus');
-    const beatFill = document.getElementById('beatFill');
-    const beatBar = document.getElementById('beatBar');
-    const beatLed = document.getElementById('beatLed');
-    const vizCanvas = document.getElementById('beatViz');
-    const vizCtx = vizCanvas.getContext('2d');
-
-    function ensureAudioCtx() {
-      if (audioCtx) return;
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const src = audioCtx.createMediaElementSource(audio);
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 64;
-      freqData = new Uint8Array(analyser.frequencyBinCount);
-      src.connect(analyser);
-      analyser.connect(audioCtx.destination);
-    }
-
-    async function toggleBeat() {
-      ensureAudioCtx();
-      if (audioCtx.state === 'suspended') await audioCtx.resume();
-      if (audio.paused) {
-        try {
-          await audio.play();
-          beatPlayBtn.textContent = '❚❚ PAUSE BEAT';
-          beatPlayBtn.classList.add('playing');
-          beatStatus.textContent = 'FINAL BEAT.MP3 — LIVE';
-        } catch {
-          beatStatus.textContent = 'CLICK MP3 TO LOAD BEAT';
-        }
-      } else {
-        audio.pause();
-        beatPlayBtn.textContent = '▶ PLAY BEAT';
-        beatPlayBtn.classList.remove('playing');
-        beatStatus.textContent = 'FINAL BEAT.MP3 — PAUSED';
-      }
-    }
-    beatPlayBtn.onclick = toggleBeat;
-
-    beatBar.onclick = (e) => {
-      if (!audio.duration) return;
-      const r = beatBar.getBoundingClientRect();
-      audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
-    };
-
-    document.getElementById('beatFileInput').onchange = (e) => {
-      const f = e.target.files[0];
-      if (!f) return;
-      audio.src = URL.createObjectURL(f);
-      beatStatus.textContent = f.name.toUpperCase();
-      toggleBeat();
-    };
+    let beatBass = 0;
+    let beatController = null;
+    initBeatPlayer({
+      configUrl: './audio/beat-player.config.json',
+      transportEl: document.getElementById('beatTransport'),
+      statusEl: document.getElementById('beatStatus'),
+      fillEl: document.getElementById('beatFill'),
+      barEl: document.getElementById('beatBar'),
+      ledEl: document.getElementById('beatLed'),
+      vizCanvas: document.getElementById('beatViz'),
+    }).then((ctrl) => {
+      beatController = ctrl;
+    }).catch((err) => {
+      console.error('Beat player init failed:', err);
+    });
 
     function updateBeatVisualizer() {
-      vizCtx.fillStyle = '#000';
-      vizCtx.fillRect(0, 0, vizCanvas.width, vizCanvas.height);
-      if (analyser && !audio.paused) {
-        analyser.getByteFrequencyData(freqData);
-        let bassSum = 0;
-        for (let i = 0; i < 4; i++) bassSum += freqData[i];
-        beatBass = (bassSum / (4 * 255));
-        const bars = 16;
-        const bw = vizCanvas.width / bars;
-        for (let i = 0; i < bars; i++) {
-          const val = freqData[i] / 255;
-          const h = Math.max(2, val * vizCanvas.height);
-          vizCtx.fillStyle = i < 4 ? '#FF6B00' : (i < 10 ? '#FFD000' : '#EDE3DA');
-          vizCtx.fillRect(i * bw + 1, vizCanvas.height - h, bw - 2, h);
-        }
-        beatLed.style.background = beatBass > 0.55 ? '#FF6B00' : '#FFD000';
-        beatLed.style.transform = `scale(${1 + beatBass * 0.5})`;
-        if (audio.duration) beatFill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
-      } else {
-        beatBass *= 0.9;
-        beatLed.style.background = '#333';
-        beatLed.style.transform = 'scale(1)';
+      if (beatController) {
+        beatBass = beatController.updateFrame();
       }
     }
 

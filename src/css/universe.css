@@ -226,6 +226,85 @@
   text-transform: uppercase;
 }
 
+/* Config-driven Circular Media Transport Controls inside Bottom Beat Deck */
+.beat-transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  --beat-accent: #6b5ce7;
+  --beat-accent-bright: #7f72ff;
+}
+
+.beat-tbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+}
+
+.beat-tbtn svg {
+  display: block;
+}
+
+.beat-tbtn--sm {
+  width: 28px;
+  height: 28px;
+}
+
+.beat-tbtn--sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.beat-tbtn--md {
+  width: 34px;
+  height: 34px;
+}
+
+.beat-tbtn--md svg {
+  width: 16px;
+  height: 16px;
+}
+
+.beat-tbtn--lg {
+  width: 42px;
+  height: 42px;
+}
+
+.beat-tbtn--lg svg {
+  width: 20px;
+  height: 20px;
+}
+
+.beat-tbtn--outline {
+  background: #141418;
+  color: var(--beat-accent);
+  border: 1.75px solid var(--beat-accent);
+}
+
+.beat-tbtn--outline:hover,
+.beat-tbtn--outline.is-active {
+  background: rgba(107, 92, 231, 0.22);
+  color: var(--beat-accent-bright);
+  border-color: var(--beat-accent-bright);
+  transform: scale(1.06);
+  box-shadow: 0 0 10px rgba(107, 92, 231, 0.45);
+}
+
+.beat-tbtn--solid {
+  background: var(--beat-accent);
+  color: #fff;
+  border: 2px solid var(--beat-accent-bright);
+  box-shadow: 0 0 14px rgba(107, 92, 231, 0.45);
+}
+
+.beat-tbtn--solid:hover {
+  background: var(--beat-accent-bright);
+  transform: scale(1.07);
+}
+
 /* WebGL / Asset Fallback Card */
 .vault-fallback {
   position: absolute;
