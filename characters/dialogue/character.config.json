@@ -1,0 +1,24 @@
+{
+  "id": "dialogue",
+  "name": "DIALOGUE",
+  "displayName": "Dialogue",
+  "role": "CONFIGURABLE SLOT",
+  "color": "0xa855f7",
+  "accentHex": "#A855F7",
+  "secondaryHex": "#6366F1",
+  "bgPos": "50% 50%",
+  "status": "configurable_placeholder",
+  "tagline": "Configurable character slot awaiting canonical identity, official biography, and 3D asset reference.",
+  "biography": "[Pending Reference] Preserve display label 'Dialogue'. Supply verified character lore and canonical details in characters/dialogue/character.config.json.",
+  "verifiedVersion": "Unassigned — awaiting reference pack",
+  "stats": {
+    "Speed": 50,
+    "Healing": 50,
+    "Shield": 50,
+    "Aggression": 50
+  },
+  "suggestedPrompts": [
+    "What reference details are still needed for Dialogue?",
+    "How can a custom character be configured here?"
+  ]
+}

@@ -1,0 +1,559 @@
+/* Isolated enhancements for Embers Free Fire 3D AI Character Universe.
+   Preserves existing homepage/section-2 visual design while enhancing cards,
+   ability VFX HUD, streaming chat UX, accessibility, and mobile responsiveness. */
+
+/* Card dual action buttons */
+.char-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.char-open-tag.chat-cta {
+  background: var(--ff-orange);
+  color: #000;
+  border-color: #000;
+}
+
+.char-open-tag:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+/* Expansion slot drawer toggle in S2 */
+.s2-expansion-bar {
+  position: absolute;
+  left: calc(74 * var(--u));
+  top: calc(534 * var(--u));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  max-width: calc(320 * var(--u));
+}
+
+.s2-exp-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(237, 227, 218, 0.7);
+}
+
+.s2-exp-chip {
+  background: rgba(18, 17, 16, 0.9);
+  color: var(--light);
+  border: 1.5px solid var(--soft);
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.s2-exp-chip:hover {
+  background: var(--ff-gold);
+  color: #000;
+  border-color: #000;
+}
+
+/* Vault Stage Ability HUD & Countdown Overlay */
+.ability-hud {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.ability-hud-card {
+  pointer-events: auto;
+  background: rgba(10, 11, 14, 0.84);
+  backdrop-filter: blur(8px);
+  border: 2px solid var(--hud-accent, var(--ff-orange));
+  box-shadow: 4px 4px 0 #000;
+  padding: 10px 12px;
+  max-width: 270px;
+}
+
+.ability-hud-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  color: var(--hud-accent, var(--ff-gold));
+  text-transform: uppercase;
+}
+
+.ability-hud-lines {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--light);
+}
+
+.ability-hud-controls {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.ability-trigger-btn {
+  background: var(--hud-accent, var(--ff-orange));
+  color: #000;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: transform 0.12s ease;
+}
+
+.ability-trigger-btn:hover {
+  transform: translate(-2px, -2px);
+}
+
+.ability-trigger-btn.active {
+  background: #fff;
+  color: #000;
+}
+
+/* Circular SVG countdown badge */
+.ability-countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 11, 14, 0.88);
+  border: 1.5px solid var(--hud-accent, #00c8ff);
+  padding: 4px 10px 4px 6px;
+}
+
+.ability-countdown[hidden] {
+  display: none;
+}
+
+.countdown-ring {
+  width: 30px;
+  height: 30px;
+  transform: rotate(-90deg);
+}
+
+.countdown-ring circle.track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 3.5;
+}
+
+.countdown-ring circle.fill {
+  fill: none;
+  stroke: var(--hud-accent, #00c8ff);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.12s linear;
+}
+
+.countdown-text {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--hud-accent, #00c8ff);
+  letter-spacing: 0.06em;
+}
+
+/* K Dual-Mode Switcher */
+.k-mode-switcher {
+  display: flex;
+  gap: 6px;
+}
+
+.k-mode-switcher[hidden] {
+  display: none;
+}
+
+.k-mode-btn {
+  background: #000;
+  color: var(--light);
+  border: 1.5px solid var(--light);
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.k-mode-btn.active {
+  background: #00e5ff;
+  color: #000;
+  border-color: #000;
+}
+
+/* WebGL / Asset Fallback Card */
+.vault-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  background: radial-gradient(circle at 50% 45%, #231915 0%, #0b0a09 80%);
+}
+
+.vault-fallback[hidden] {
+  display: none;
+}
+
+/* Enhanced Chat Panel */
+.chat-panel {
+  height: auto;
+  flex: 1;
+  min-height: 350px;
+}
+
+.chat-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chat-status-badge {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  background: #000;
+  border: 1.5px solid var(--soft);
+  color: var(--ff-gold);
+}
+
+.chat-status-badge[data-state="ready"] {
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+.chat-status-badge[data-state="error"] {
+  border-color: #ef4444;
+  color: #f87171;
+}
+
+.chat-top-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.chat-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chat-prompt-chip {
+  background: #0e0d0c;
+  color: var(--light);
+  border: 1.5px solid var(--accent);
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chat-prompt-chip:hover {
+  background: var(--ff-orange);
+  color: #000;
+  border-color: #000;
+}
+
+.chat-msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.chat-msg-row.user {
+  align-items: flex-end;
+}
+
+.chat-msg-row.bot {
+  align-items: flex-start;
+}
+
+.chat-msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: rgba(237, 227, 218, 0.72);
+}
+
+.chat-avatar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 9px;
+  font-weight: 900;
+  background: #000;
+  border: 1.5px solid var(--ff-orange);
+}
+
+.chat-sender-name {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chat-msg.error {
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.chat-msg-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.chat-mini-btn {
+  background: transparent;
+  color: rgba(237, 227, 218, 0.72);
+  border: 1px solid rgba(237, 227, 218, 0.25);
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chat-mini-btn:hover {
+  background: var(--light);
+  color: #000;
+}
+
+.chat-mini-btn.retry {
+  border-color: var(--ff-orange);
+  color: var(--ff-orange);
+}
+
+.chat-form textarea {
+  flex: 1;
+  background: #000;
+  color: var(--light);
+  border: 2px solid var(--light);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  resize: none;
+  min-height: 36px;
+  max-height: 110px;
+  user-select: text;
+}
+
+.chat-stop-btn {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+
+.typing-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 4px;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ff-gold);
+  animation: dotPulse 1s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.1); }
+}
+
+.stream-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--ff-gold);
+  animation: blinkCursor 0.8s steps(2, start) infinite;
+}
+
+@keyframes blinkCursor {
+  to { visibility: hidden; }
+}
+
+/* Privacy Footer & Modal */
+.chat-privacy-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: rgba(237, 227, 218, 0.72);
+  flex-wrap: wrap;
+}
+
+.chat-privacy-bar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.privacy-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: rgba(8, 7, 6, 0.86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.privacy-modal[hidden] {
+  display: none;
+}
+
+.privacy-card {
+  width: min(520px, 95vw);
+  background: #161311;
+  border: 2.5px solid var(--light);
+  box-shadow: 8px 8px 0 #000;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  user-select: text;
+}
+
+.privacy-card h3 {
+  color: var(--ff-gold);
+  font-size: 18px;
+}
+
+.privacy-card p, .privacy-card li {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(237, 227, 218, 0.88);
+}
+
+.privacy-card ul {
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Focus accessibility */
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--ff-gold);
+  outline-offset: 2px;
+}
+
+/* Tablet & Mobile Responsive Support */
+@media (max-width: 1024px) {
+  .vault-box {
+    grid-template-columns: 1fr;
+    grid-template-rows: 270px 1fr;
+    height: 94vh;
+    width: 96vw;
+  }
+
+  .vault-stage {
+    border-right: none;
+    border-bottom: 3px solid var(--light);
+  }
+
+  .cards-grid {
+    left: 24px;
+    right: 24px;
+    top: 250px;
+    grid-template-columns: repeat(2, 1fr);
+    max-height: calc(100vh - 340px);
+    overflow-y: auto;
+    padding-bottom: 12px;
+  }
+
+  .s2-body, .s2-cta, .s2-expansion-bar {
+    display: none;
+  }
+
+  .op-dock {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .vault-modal {
+    padding: 8px;
+  }
+
+  .vault-box {
+    grid-template-rows: 215px 1fr;
+    height: 96vh;
+    width: 98vw;
+  }
+
+  .vault-dossier {
+    padding: 14px;
+  }
+
+  .vault-char-name {
+    font-size: 24px;
+  }
+
+  .ability-hud-card {
+    max-width: 165px;
+    padding: 6px 8px;
+  }
+
+  .ability-hud-lines {
+    font-size: 9px;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+    top: 205px;
+  }
+
+  .beat-deck {
+    min-width: auto;
+    width: calc(100vw - 24px);
+    padding: 6px 10px;
+  }
+
+  .beat-viz {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

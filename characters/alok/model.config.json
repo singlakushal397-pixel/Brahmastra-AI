@@ -1,0 +1,28 @@
+{
+  "id": "alok",
+  "modelType": "fbx",
+  "modelPath": "./models/alok/alok.fbx",
+  "textures": {
+    "20210528_115100": "./models/alok/20210528_115100.jpeg",
+    "baju": "./models/alok/20210528_115100.jpeg",
+    "map": "./models/alok/20210528_115100.jpeg",
+    "celana": "./models/alok/celana.png",
+    "kacamata": "./models/alok/kacamata.png",
+    "kulit": "./models/alok/kulit.png",
+    "rambut": "./models/alok/rambut.png",
+    "sepatu": "./models/alok/sepatu.png"
+  },
+  "scaleTarget": 2.05,
+  "cameraOffset": [0, 1.35, 3.65],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "music_groove",
+  "vfxProfile": "drop_the_beat_blue_aura",
+  "environmentTheme": {
+    "label": "Neon Soundstage",
+    "primaryHex": "#00C8FF",
+    "glowHex": "#1E90FF",
+    "bgTop": "#0a1c2e",
+    "bgBottom": "#070b10",
+    "rimColor": "0x00c8ff"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "alok",
+  "name": "DJ ALOK",
+  "displayName": "DJ Alok",
+  "role": "ACTIVE SUPPORT",
+  "color": "0x00c8ff",
+  "accentHex": "#00C8FF",
+  "secondaryHex": "#FF6B00",
+  "bgPos": "0% 0%",
+  "status": "active",
+  "tagline": "World-famous DJ who turns the battlefield into a high-tempo healing arena.",
+  "biography": "Inspired by the globally acclaimed Brazilian DJ Alok, he channels the unifying power of electronic music onto the Free Fire battlefield. Energetic, optimistic, and deeply loyal to his squad, he believes every team moves best when locked onto the same rhythm.",
+  "verifiedVersion": "Free Fire OB4x / Free Fire India Reference",
+  "stats": {
+    "Speed": 92,
+    "Healing": 98,
+    "Shield": 62,
+    "Aggression": 84
+  },
+  "suggestedPrompts": [
+    "Tell me about your music.",
+    "How do I stay motivated?",
+    "What makes a strong team?",
+    "Tell me about Drop the Beat."
+  ]
+}

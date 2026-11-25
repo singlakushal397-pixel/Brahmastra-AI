@@ -1,0 +1,20 @@
+{
+  "id": "chrono",
+  "activeSkill": "Time Turner",
+  "passiveSkill": null,
+  "abilityType": "Active Defense",
+  "versionTag": "Verified OB Patch Reference (800–1000 DMG Block / 6–10s)",
+  "durationSeconds": 8,
+  "cooldownSeconds": 75,
+  "damageBlocked": 800,
+  "description": "Deploys an impenetrable spherical energy force field blocking 800–1000 damage from outside fire. Units inside cannot attack enemies outside the dome.",
+  "statsDisplay": [
+    "TIME TURNER",
+    "800–1000 DMG BLOCK",
+    "360° FORCE DOME",
+    "8 SECONDS",
+    "NO OUTWARD FIRE"
+  ],
+  "verifiedPatchNote": "Updated Free Fire balance patches restrict firing outward from inside the Time Turner dome while retaining high damage absorption (800–1000 HP shield capacity).",
+  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+}

@@ -1,0 +1,20 @@
+{
+  "id": "alok",
+  "activeSkill": "Drop the Beat",
+  "passiveSkill": null,
+  "abilityType": "Active Support",
+  "versionTag": "Demo Preset (+15% Speed / +5 HP/s / 10s) · OB Patch Note: +10% Speed, Teammate Music Notes",
+  "durationSeconds": 10,
+  "cooldownSeconds": 50,
+  "auraRadiusMeters": 5,
+  "description": "Creates a 5-meter circular energy aura around DJ Alok that boosts squad movement speed and restores HP every second over the duration.",
+  "statsDisplay": [
+    "DROP THE BEAT",
+    "5M AURA",
+    "+15% MOVEMENT SPEED",
+    "+5 HP / SECOND",
+    "10 SECONDS"
+  ],
+  "verifiedPatchNote": "Recent Free Fire OB updates (Party Remix) adjusted movement speed to +10% and added collectible music notes dropped every 2s for allies. Classic 10s / +15% / +5 HP/s values are displayed for the visual demonstration.",
+  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+}

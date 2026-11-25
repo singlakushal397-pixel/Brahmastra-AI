@@ -1,0 +1,24 @@
+{
+  "id": "razoya",
+  "name": "RAZOYA",
+  "displayName": "Razoya",
+  "role": "CONFIGURABLE SLOT",
+  "color": "0x10b981",
+  "accentHex": "#10B981",
+  "secondaryHex": "#06B6D4",
+  "bgPos": "50% 50%",
+  "status": "configurable_placeholder",
+  "tagline": "Configurable character entry awaiting 3D model, biography, ability, and personality reference.",
+  "biography": "[Pending Reference] Preserve exact spelling 'Razoya'. Supply verified character lore and canonical details in characters/razoya/character.config.json.",
+  "verifiedVersion": "Unassigned — awaiting reference pack",
+  "stats": {
+    "Speed": 50,
+    "Healing": 50,
+    "Shield": 50,
+    "Aggression": 50
+  },
+  "suggestedPrompts": [
+    "What assets are needed to activate Razoya?",
+    "Tell me about your current placeholder setup."
+  ]
+}

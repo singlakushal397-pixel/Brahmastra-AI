@@ -1,0 +1,19 @@
+{
+  "id": "dialogue",
+  "modelType": "placeholder",
+  "modelPath": null,
+  "textures": {},
+  "scaleTarget": 2.0,
+  "cameraOffset": [0, 1.35, 3.65],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "idle_breathe",
+  "vfxProfile": "hologram_placeholder",
+  "environmentTheme": {
+    "label": "Configurable Holo Bay",
+    "primaryHex": "#A855F7",
+    "glowHex": "#6366F1",
+    "bgTop": "#1b1030",
+    "bgBottom": "#09070e",
+    "rimColor": "0xa855f7"
+  }
+}

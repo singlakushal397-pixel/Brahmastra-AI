@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "defaultCharacter": "alok",
+  "characters": [
+    { "id": "alok", "visibleInMainGrid": true, "order": 1 },
+    { "id": "chrono", "visibleInMainGrid": true, "order": 2 },
+    { "id": "k", "visibleInMainGrid": true, "order": 3 },
+    { "id": "kelly", "visibleInMainGrid": true, "order": 4 },
+    { "id": "orion", "visibleInMainGrid": true, "order": 5 },
+    { "id": "tatsuya", "visibleInMainGrid": true, "order": 6 },
+    { "id": "dialogue", "visibleInMainGrid": false, "order": 7 },
+    { "id": "razoya", "visibleInMainGrid": false, "order": 8 }
+  ]
+}

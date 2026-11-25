@@ -1,0 +1,26 @@
+{
+  "id": "k",
+  "modelType": "obj",
+  "modelPath": "./models/k/k.obj",
+  "textures": {
+    "Male_Lobby_Hair_Sc_Professor": "./models/k/male_sc_foodieboy_hair_001_s.png",
+    "Male_Lobby_Head_Sc_Professor": "./models/k/Male_Lobby_Head_Sc_Professor_D.png",
+    "Male_Lobby_Top_Sc_Professor": "./models/k/Male_Top_Sc_Professor_D.png",
+    "Male_Lobby_Body_Sc_Professor": "./models/k/Male_Body_Cos_Professor_D.png",
+    "Male_Lobby_Bottom_Sc_Professor": "./models/k/Male_Bottom_Sc_Professor_D.png",
+    "Male_Lobby_Shoe_Sc_Professor": "./models/k/Male_Shoe_Sc_Professor_D.png"
+  },
+  "scaleTarget": 2.05,
+  "cameraOffset": [0, 1.35, 3.65],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "martial_poise",
+  "vfxProfile": "master_of_all_dual_mode",
+  "environmentTheme": {
+    "label": "Dojo Tactical Core",
+    "primaryHex": "#00E5FF",
+    "glowHex": "#3B82F6",
+    "bgTop": "#0d2033",
+    "bgBottom": "#090b10",
+    "rimColor": "0x00e5ff"
+  }
+}

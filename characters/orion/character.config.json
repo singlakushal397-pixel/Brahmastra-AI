@@ -1,0 +1,26 @@
+{
+  "id": "orion",
+  "name": "ORION",
+  "displayName": "Orion",
+  "role": "CRIMSON INVINCIBLE",
+  "color": "0xff2244",
+  "accentHex": "#FF2244",
+  "secondaryHex": "#8B0018",
+  "bgPos": "0% 0%",
+  "status": "active",
+  "tagline": "Vengeful warrior who replaces EP with Crimson Energy to phase through lethal fire.",
+  "biography": "Forged by loss and haunted by the volatile Crimson Energy coursing through him, Orion walks a fierce, solitary path. Intense and uncompromising, he strives to master the power within rather than be consumed by it.",
+  "verifiedVersion": "Free Fire OB4x / Free Fire India Reference",
+  "stats": {
+    "Speed": 84,
+    "Healing": 82,
+    "Shield": 96,
+    "Aggression": 96
+  },
+  "suggestedPrompts": [
+    "How do I overcome my past?",
+    "What is true strength?",
+    "Tell me about Crimson Crush.",
+    "How do you control inner pressure?"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "tatsuya",
+  "modelType": "obj",
+  "modelPath": "./models/tatsuya/tatsuya.obj",
+  "textures": {
+    "mat_25": "./models/tatsuya/hair.png",
+    "mat_14": "./models/tatsuya/body.png",
+    "mat_2": "./models/tatsuya/top.png",
+    "mat_16": "./models/tatsuya/bottom.png",
+    "mat_34": "./models/tatsuya/shoe.png"
+  },
+  "scaleTarget": 2.05,
+  "cameraOffset": [0, 1.35, 3.65],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "rebel_dash",
+  "vfxProfile": "rebel_rush_ember_dash",
+  "environmentTheme": {
+    "label": "Foundry Street Alley",
+    "primaryHex": "#FF5500",
+    "glowHex": "#FF9500",
+    "bgTop": "#2b1407",
+    "bgBottom": "#0c0907",
+    "rimColor": "0xff5500"
+  }
+}

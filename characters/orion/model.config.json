@@ -1,0 +1,26 @@
+{
+  "id": "orion",
+  "modelType": "obj",
+  "modelPath": "./models/orion/orion.obj",
+  "textures": {
+    "mat0": "./models/orion/tex_0145_0out.png",
+    "mat0.004": "./models/orion/tex_0150_0out.png",
+    "mat0.003": "./models/orion/tex_0155_0out.png",
+    "mat0.002": "./models/orion/tex_0160_0out.png",
+    "mat0.001": "./models/orion/tex_0165_0out.png",
+    "mat0.005": "./models/orion/tex_0170_0out.png"
+  },
+  "scaleTarget": 2.05,
+  "cameraOffset": [0, 1.35, 3.65],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "crimson_surge",
+  "vfxProfile": "crimson_crush_orb",
+  "environmentTheme": {
+    "label": "Crimson Sanctum",
+    "primaryHex": "#FF2244",
+    "glowHex": "#990022",
+    "bgTop": "#2b0811",
+    "bgBottom": "#090406",
+    "rimColor": "0xff2244"
+  }
+}

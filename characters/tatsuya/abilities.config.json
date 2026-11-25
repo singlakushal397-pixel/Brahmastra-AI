@@ -1,0 +1,20 @@
+{
+  "id": "tatsuya",
+  "activeSkill": "Rebel Rush",
+  "passiveSkill": null,
+  "abilityType": "Active Rush (2 Charges)",
+  "versionTag": "Verified OB Patch Reference (0.3s Dash / 2 Charges)",
+  "durationSeconds": 4,
+  "cooldownSeconds": 90,
+  "charges": 2,
+  "description": "Dashes forward at extreme speed for 0.3s; stores up to 2 consecutive charges with knockdown cooldown reset mechanics.",
+  "statsDisplay": [
+    "REBEL RUSH",
+    "0.3S RAPID DASH",
+    "2 STORED CHARGES",
+    "ENTRY FRAGGER",
+    "KNOCK RESET"
+  ],
+  "verifiedPatchNote": "Verified Free Fire Tatsuya stats: 0.3s rapid forward dash, up to 2 stored charges, knockdown within 10s reduces/resets cooldown.",
+  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+}

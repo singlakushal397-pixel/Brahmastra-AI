@@ -1,0 +1,19 @@
+{
+  "id": "kelly",
+  "activeSkill": "Deadly Velocity",
+  "passiveSkill": "Dash (+6% Sprint Speed)",
+  "abilityType": "Passive / Awakened Rush",
+  "versionTag": "Verified OB Patch Reference (+6% Sprint / 4s Prime → 106% DMG)",
+  "durationSeconds": 6,
+  "cooldownSeconds": 0,
+  "description": "Permanently increases sprinting speed by 6%. In Awakened Deadly Velocity form, sprinting continuously for 4s primes the first hit for 106% damage (5s active window).",
+  "statsDisplay": [
+    "DEADLY VELOCITY",
+    "+6% SPRINT SPEED",
+    "4S SPRINT PRIME",
+    "106% FIRST-SHOT DMG",
+    "5S BUFF WINDOW"
+  ],
+  "verifiedPatchNote": "Verified Free Fire Dash / Deadly Velocity stats: +6% permanent sprint speed, 4s continuous sprint charge, 106% first-shot damage for 5 seconds.",
+  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+}

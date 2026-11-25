@@ -1,0 +1,27 @@
+{
+  "id": "kelly",
+  "modelType": "fbx",
+  "modelPath": "./models/kelly/kelly.fbx",
+  "textures": {
+    "body": "./models/kelly/body.png",
+    "bra": "./models/kelly/bra.png",
+    "face": "./models/kelly/face.png",
+    "hairs": "./models/kelly/hairs.png",
+    "pent": "./models/kelly/pent.png",
+    "shoes1": "./models/kelly/shoes1.png"
+  },
+  "scaleTarget": 2.05,
+  "cameraOffset": [0, 1.35, 3.65],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "athletic_sprint",
+  "vfxProfile": "deadly_velocity_trails",
+  "visualIdentityNotes": "Yellow jacket & track pants with black accents, black crop top, yellow-black sneakers, black hair with red-tinted tips.",
+  "environmentTheme": {
+    "label": "Velocity Track Arena",
+    "primaryHex": "#FFD000",
+    "glowHex": "#FFC400",
+    "bgTop": "#2b2307",
+    "bgBottom": "#0c0b08",
+    "rimColor": "0xffd000"
+  }
+}

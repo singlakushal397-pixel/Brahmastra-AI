@@ -1,0 +1,26 @@
+{
+  "id": "chrono",
+  "modelType": "obj",
+  "modelPath": "./models/chrono/chrono.obj",
+  "textures": {
+    "CR7_Head": "./models/chrono/free-fire-chrono-character-3d-model-obj_(5.jpeg",
+    "CR7_Top": "./models/chrono/free-fire-chrono-character-3d-model-obj_(9.jpeg",
+    "CR7_Bottum": "./models/chrono/free-fire-chrono-character-3d-model-obj_(2.jpeg",
+    "CR7_Hair": "./models/chrono/free-fire-chrono-character-3d-model-obj_(4.jpeg",
+    "CR7_Shoe": "./models/chrono/free-fire-chrono-character-3d-model-obj_(7.jpeg",
+    "CR7_Accessory": "./models/chrono/free-fire-chrono-character-3d-model-obj.jpeg"
+  },
+  "scaleTarget": 2.05,
+  "cameraOffset": [0, 1.35, 3.85],
+  "cameraTarget": [0, 1.0, 0],
+  "animationProfile": "tactical_hover",
+  "vfxProfile": "time_turner_dome",
+  "environmentTheme": {
+    "label": "Holo Grid Sector",
+    "primaryHex": "#00D4FF",
+    "glowHex": "#38BDF8",
+    "bgTop": "#0b2236",
+    "bgBottom": "#070b10",
+    "rimColor": "0x00d4ff"
+  }
+}

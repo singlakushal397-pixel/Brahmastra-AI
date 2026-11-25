@@ -1,0 +1,26 @@
+{
+  "id": "tatsuya",
+  "name": "TATSUYA",
+  "displayName": "Tatsuya",
+  "role": "REBEL ASSAULT",
+  "color": "0xff5500",
+  "accentHex": "#FF5500",
+  "secondaryHex": "#FF9500",
+  "bgPos": "100% 0%",
+  "status": "active",
+  "tagline": "Street-born entry fragger built for explosive double-dash close-quarters pushes.",
+  "biography": "A fearless, street-smart rebel with explosive reflexes. Tatsuya thrives in close-quarters chaos, chaining rapid dashes to break enemy lines before they can react.",
+  "verifiedVersion": "Free Fire OB4x / Free Fire India Reference",
+  "stats": {
+    "Speed": 98,
+    "Healing": 35,
+    "Shield": 58,
+    "Aggression": 99
+  },
+  "suggestedPrompts": [
+    "How do you use Rebel Rush effectively?",
+    "What's your close-quarters strategy?",
+    "How do you handle pressure?",
+    "Tell me about your fighting style."
+  ]
+}

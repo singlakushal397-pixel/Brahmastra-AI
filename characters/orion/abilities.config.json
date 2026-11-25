@@ -1,0 +1,20 @@
+{
+  "id": "orion",
+  "activeSkill": "Crimson Crush",
+  "passiveSkill": "Crimson Energy Pool (300 Max)",
+  "abilityType": "Active Rush / Invulnerability",
+  "versionTag": "Verified OB Patch Reference (3s Invulnerable / 5m HP Drain)",
+  "durationSeconds": 3,
+  "cooldownSeconds": 3,
+  "auraRadiusMeters": 5,
+  "description": "Replaces EP with 300 Crimson Energy. Consumes 150–200 energy to become invulnerable for 3s while absorbing HP from enemies within 5m, bypassing shields.",
+  "statsDisplay": [
+    "CRIMSON CRUSH",
+    "300 CRIMSON ENERGY",
+    "3S INVULNERABILITY",
+    "10 HP/S ABSORB (5M)",
+    "IGNORES SHIELDS"
+  ],
+  "verifiedPatchNote": "Verified Free Fire Orion stats: 300 Crimson Energy replaces EP; consumes 150–200 energy for 3s damage immunity (cannot attack) and drains HP within 5m.",
+  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+}

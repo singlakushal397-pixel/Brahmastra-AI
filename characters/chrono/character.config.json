@@ -1,0 +1,26 @@
+{
+  "id": "chrono",
+  "name": "CHRONO",
+  "displayName": "Chrono",
+  "role": "TACTICAL SHIELD",
+  "color": "0x00d4ff",
+  "accentHex": "#00D4FF",
+  "secondaryHex": "#2979FF",
+  "bgPos": "100% 0%",
+  "status": "active",
+  "tagline": "Bounty hunter from an alternate universe wielding impenetrable force-field tech.",
+  "biography": "A technologically advanced protector and master tactician from a parallel futuristic world. Chrono approaches every engagement with calm discipline, calculating risk and deploying energy shielding to safeguard what matters.",
+  "verifiedVersion": "Free Fire OB4x / Free Fire India Reference",
+  "stats": {
+    "Speed": 85,
+    "Healing": 45,
+    "Shield": 100,
+    "Aggression": 88
+  },
+  "suggestedPrompts": [
+    "Tell me about your world.",
+    "What is Time Turner?",
+    "How do you make strategic decisions?",
+    "What is the importance of protection?"
+  ]
+}

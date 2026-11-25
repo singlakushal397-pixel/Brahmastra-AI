@@ -1,0 +1,34 @@
+{
+  "id": "k",
+  "activeSkill": "Master of All",
+  "passiveSkill": "+50 Max EP (250 EP Cap)",
+  "abilityType": "Active Hybrid (Dual Mode)",
+  "versionTag": "Verified OB Patch Reference (600% Jiu-Jitsu / +3 EP Psychology)",
+  "durationSeconds": 12,
+  "cooldownSeconds": 6,
+  "maxEp": 250,
+  "modes": [
+    {
+      "id": "jiujitsu",
+      "name": "Jiu-jitsu Mode",
+      "colorHex": "#00E5FF",
+      "summary": "Allies within aura gain +600% EP-to-HP conversion rate."
+    },
+    {
+      "id": "psychology",
+      "name": "Psychology Mode",
+      "colorHex": "#3B82F6",
+      "summary": "Recovers 3 EP every 1–2 seconds up to 250 Max EP."
+    }
+  ],
+  "description": "Increases max EP by 50 (250 total) and toggles between Jiu-jitsu Mode (massive ally EP-to-HP conversion) and Psychology Mode (continuous EP regeneration).",
+  "statsDisplay": [
+    "MASTER OF ALL",
+    "250 MAX EP",
+    "JIU-JITSU: +600% CONVERSION",
+    "PSYCHOLOGY: +3 EP / TICK",
+    "6S MODE SWITCH"
+  ],
+  "verifiedPatchNote": "Recent Free Fire updates buffed Jiu-Jitsu Mode conversion to +600% within ally aura while retaining Psychology Mode's +3 EP regeneration up to 250 EP (6s switch cooldown).",
+  "disclaimer": "Interactive 3D website visual demonstration only — does not modify the Free Fire game."
+}

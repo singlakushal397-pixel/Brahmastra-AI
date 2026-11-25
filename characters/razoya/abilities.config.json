@@ -1,0 +1,17 @@
+{
+  "id": "razoya",
+  "activeSkill": "Pending Configuration",
+  "passiveSkill": null,
+  "abilityType": "Configurable Slot",
+  "versionTag": "Awaiting Official Reference",
+  "durationSeconds": 5,
+  "cooldownSeconds": 0,
+  "description": "No official ability has been assigned yet. Update characters/razoya/abilities.config.json once references are supplied.",
+  "statsDisplay": [
+    "RAZOYA",
+    "CONFIGURABLE ENTRY",
+    "AWAITING ABILITY REF"
+  ],
+  "verifiedPatchNote": "No statistics invented — slot ready for owner reference update.",
+  "disclaimer": "Placeholder configuration awaiting official character data."
+}

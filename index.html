@@ -422,6 +422,7 @@
       text-transform: uppercase;
     }
   </style>
+  <link rel="stylesheet" href="./src/css/universe.css" />
 </head>
 <body>
   <main class="stage pre" id="stage">
@@ -505,6 +506,7 @@
         <p class="s2-body">Select any Free Fire meta operator to launch their interactive 360° 3D model and AI Chatbot in the Brutalist Vault. Drag to orbit, toggle wireframe, and feel the live beat-reactive ember core.</p>
         <button class="s2-cta" onclick="window.goState(0)">← Back To Iron Gate</button>
         <div class="cards-grid" id="cardsGrid"></div>
+        <div class="s2-expansion-bar" id="s2ExpansionBar"></div>
       </div>
     </section>
 
@@ -530,203 +532,202 @@
   <!-- 11. 3D Character Vault & AI Chat Modal -->
   <div class="vault-modal" id="vaultModal">
     <div class="vault-box">
-      <div class="vault-stage">
+      <div class="vault-stage" id="vaultStage">
         <div class="vault-loader" id="vaultLoader">
           <div class="algerian" style="font-size:24px;color:var(--ff-gold)">FORGING 3D MODEL...</div>
           <div id="vaultLoadMsg" style="font-size:11px;color:var(--soft)">INITIALIZING WEBGL MESH</div>
         </div>
+        <div class="vault-fallback" id="vaultFallback" hidden>
+          <div class="algerian" data-fallback-name style="font-size:26px;color:var(--ff-gold);margin-bottom:8px;">CHARACTER</div>
+          <p data-fallback-msg style="font-size:12px;color:var(--light);max-width:340px;line-height:1.5;">3D preview unavailable on this device. AI Chat and Character Dossier remain ready.</p>
+        </div>
+        <div class="ability-hud" id="abilityHud">
+          <div class="ability-hud-card">
+            <div class="ability-hud-title" id="abilityHudTitle">DROP THE BEAT</div>
+            <div class="ability-hud-lines" id="abilityHudLines"></div>
+          </div>
+          <div class="ability-hud-controls">
+            <button class="ability-trigger-btn" id="btnActivateSkill" type="button">⚡ ACTIVATE ABILITY</button>
+            <div class="ability-countdown" id="abilityCountdown" hidden>
+              <svg class="countdown-ring" viewBox="0 0 36 36">
+                <circle class="track" cx="18" cy="18" r="15"></circle>
+                <circle class="fill" id="countdownCircle" cx="18" cy="18" r="15" stroke-dasharray="94.25" stroke-dashoffset="0"></circle>
+              </svg>
+              <span class="countdown-text" id="countdownText">10.0s</span>
+            </div>
+            <div class="k-mode-switcher" id="kModeSwitcher" hidden>
+              <button type="button" class="k-mode-btn active" data-kmode="jiujitsu">Jiu-jitsu Mode</button>
+              <button type="button" class="k-mode-btn" data-kmode="psychology">Psychology Mode</button>
+            </div>
+          </div>
+        </div>
         <canvas id="char3dCanvas"></canvas>
         <div class="vault-toolbar">
-          <button class="v-btn on" id="btnSpin">Auto-Spin: ON</button>
-          <button class="v-btn" id="btnWire">Wireframe: OFF</button>
-          <button class="v-btn" id="btnLight">Light: Foundry</button>
-          <button class="v-btn" id="btnReset">Reset Cam</button>
+          <button class="v-btn on" id="btnSpin" type="button">Auto-Spin: ON</button>
+          <button class="v-btn" id="btnWire" type="button">Wireframe: OFF</button>
+          <button class="v-btn" id="btnLight" type="button">Light: Foundry</button>
+          <button class="v-btn" id="btnReset" type="button">Reset Cam</button>
         </div>
       </div>
       <div class="vault-dossier">
         <div>
           <div class="vault-top">
             <span class="char-pill" id="vRole">ACTIVE SUPPORT</span>
-            <button class="vault-close" id="vaultClose">✕ CLOSE [ESC]</button>
+            <button class="vault-close" id="vaultClose" type="button">✕ CLOSE [ESC]</button>
           </div>
           <h2 class="vault-char-name algerian" id="vName">DJ ALOK</h2>
 
           <!-- TAB SWITCHER: DOSSIER vs AI CHAT -->
           <div class="vault-tabs">
-            <button class="vault-tab active" id="tabDossier">DOSSIER</button>
-            <button class="vault-tab" id="tabChat">💬 AI CHAT</button>
+            <button class="vault-tab active" id="tabDossier" type="button">DOSSIER</button>
+            <button class="vault-tab" id="tabChat" type="button">💬 CHAT WITH CHARACTER</button>
           </div>
 
           <!-- PANEL 1: CHARACTER STATS -->
           <div class="dossier-panel" id="dossierPanel">
             <p id="vTagline" style="font-size:12px;color:rgba(237,227,218,.8);line-height:1.45;"></p>
+            <p id="vBio" style="font-size:11px;color:rgba(237,227,218,.68);line-height:1.45;margin-top:6px;"></p>
             <div class="vault-skill-box">
-              <div style="font-size:10px;color:var(--ff-orange);font-weight:900;letter-spacing:.1em;">SIGNATURE ABILITY</div>
+              <div style="font-size:10px;color:var(--ff-orange);font-weight:900;letter-spacing:.1em;" id="vSkillType">SIGNATURE ABILITY</div>
               <div id="vSkill" class="algerian" style="font-size:18px;margin:4px 0;">DROP THE BEAT</div>
               <div id="vSkillDesc" style="font-size:12px;color:rgba(237,227,218,.85);line-height:1.45;"></div>
+              <div id="vPatchNote" style="font-size:10px;color:var(--ff-gold);margin-top:6px;line-height:1.35;"></div>
             </div>
             <div id="vStats"></div>
           </div>
 
           <!-- PANEL 2: CHARACTER AI CHATBOT -->
           <div class="chat-panel" id="chatPanel">
-            <div class="chat-key-row">
-              <input type="password" id="apiKeyInput" placeholder="Paste Gemini (AIza...) or OpenAI (sk-...) API Key" />
-              <button class="v-btn" id="saveKeyBtn" type="button">SAVE</button>
+            <div class="chat-topbar">
+              <span class="chat-status-badge" id="chatStatusBadge" data-state="warn">● CHECKING AI...</span>
+              <div class="chat-top-actions">
+                <button class="v-btn" id="newChatBtn" type="button">New</button>
+                <button class="v-btn" id="clearChatBtn" type="button">Clear</button>
+                <button class="v-btn" id="privacyInfoBtn" type="button">Privacy</button>
+              </div>
             </div>
-            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-prompts" id="chatPrompts" aria-label="Suggested conversation topics"></div>
+            <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
             <form class="chat-form" id="chatForm">
-              <input type="text" id="chatInput" placeholder="Ask this character anything..." autocomplete="off" />
+              <textarea id="chatInput" rows="1" placeholder="Message character... (Enter to send, Shift+Enter for new line)" autocomplete="off"></textarea>
               <button type="submit" id="chatSendBtn">SEND</button>
+              <button type="button" id="chatStopBtn" class="chat-stop-btn" hidden>STOP</button>
             </form>
+            <div class="chat-privacy-bar">
+              <label><input type="checkbox" id="persistChatToggle" /> Save chat in browser (opt-in)</label>
+              <button type="button" class="chat-mini-btn" id="deleteAllDataBtn">Delete All Session Data</button>
+            </div>
           </div>
         </div>
 
         <div class="vault-nav">
-          <button class="v-btn" id="vPrev">← PREV OPERATOR</button>
-          <button class="v-btn" id="vNext">NEXT OPERATOR →</button>
+          <button class="v-btn" id="vPrev" type="button">← PREV OPERATOR</button>
+          <button class="v-btn" id="vNext" type="button">NEXT OPERATOR →</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Privacy & Data Handling Explanation Modal -->
+  <div class="privacy-modal" id="privacyModal" hidden role="dialog" aria-modal="true" aria-labelledby="privacyHeading">
+    <div class="privacy-card">
+      <div class="vault-top">
+        <h3 id="privacyHeading" class="algerian">AI PRIVACY & SECURITY</h3>
+        <button class="vault-close" id="privacyCloseBtn" type="button">✕</button>
+      </div>
+      <ul>
+        <li><strong>Server-Side OpenAI Processing:</strong> Your OpenAI API key is stored strictly on the backend server via <code>OPENAI_API_KEY</code> and is never sent to browser JavaScript.</li>
+        <li><strong>Transport & Processing Disclosure:</strong> Messages are sent to the backend and forwarded to OpenAI to generate character replies. Because the AI model must read your prompt to respond, chats are encrypted in transit (HTTPS/TLS in production) rather than end-to-end encrypted away from the AI provider.</li>
+        <li><strong>Isolated Character Memory:</strong> Each character keeps its own separate session history. Switching from Kelly to Chrono never shares context.</li>
+        <li><strong>Minimal Retention:</strong> Server memory expires automatically and message contents are not logged. Browser history saving is off unless you enable opt-in storage, and you can delete all data anytime.</li>
+      </ul>
+    </div>
+  </div>
+
   <script type="module">
     import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
-    import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+    import { loadCharacterCatalog } from './src/js/character-store.js';
+    import { CharacterVault3D } from './src/js/vault-3d.js';
+    import { CharacterAIChat } from './src/js/ai-chat.js';
 
     // =========================================================================
-    // 1. FREE FIRE 6-CHARACTER ROSTER + EXACT MODEL / TEXTURE MAPS
+    // 1. MODULAR FREE FIRE CHARACTER UNIVERSE (LOADED FROM /characters/)
     // =========================================================================
-    const CHARACTERS = [
-      {
-        id: 'alok', name: 'DJ ALOK', role: 'ACTIVE SUPPORT', color: 0xff6b00, bgPos: '0% 0%',
-        skill: 'Drop The Beat',
-        tagline: 'World-famous DJ who turns the battlefield into a high-tempo healing arena.',
-        skillDesc: 'Creates a 5m aura that increases movement speed by 15% and restores 5 HP/s for 10s.',
-        stats: { Speed: 92, Healing: 98, Shield: 62, Aggression: 84 },
-        modelType: 'fbx', modelPath: './models/alok/alok.fbx',
-        fbxTex: {
-          '20210528_115100': './models/alok/20210528_115100.jpeg',
-          'baju': './models/alok/20210528_115100.jpeg',
-          'celana': './models/alok/celana.png',
-          'kacamata': './models/alok/kacamata.png',
-          'kulit': './models/alok/kulit.png',
-          'rambut': './models/alok/rambut.png',
-          'sepatu': './models/alok/sepatu.png'
-        }
-      },
-      {
-        id: 'chrono', name: 'CHRONO', role: 'TACTICAL SHIELD', color: 0x00d4ff, bgPos: '100% 0%',
-        skill: 'Time Turner',
-        tagline: 'Bounty hunter from an alternate universe wielding impenetrable force-field tech.',
-        skillDesc: 'Deploys an impenetrable force field blocking 800 damage from enemies outside the dome.',
-        stats: { Speed: 85, Healing: 45, Shield: 100, Aggression: 88 },
-        modelType: 'obj', modelPath: './models/chrono/chrono.obj',
-        objMtl: {
-          'CR7_Head': './models/chrono/free-fire-chrono-character-3d-model-obj_(5.jpeg',
-          'CR7_Top': './models/chrono/free-fire-chrono-character-3d-model-obj_(9.jpeg',
-          'CR7_Bottum': './models/chrono/free-fire-chrono-character-3d-model-obj_(2.jpeg',
-          'CR7_Hair': './models/chrono/free-fire-chrono-character-3d-model-obj_(4.jpeg',
-          'CR7_Shoe': './models/chrono/free-fire-chrono-character-3d-model-obj_(7.jpeg',
-          'CR7_Accessory': './models/chrono/free-fire-chrono-character-3d-model-obj.jpeg'
-        }
-      },
-      {
-        id: 'k', name: 'K (CAPTAIN BOOYAH)', role: 'EP / HP MASTER', color: 0xffd000, bgPos: '0% 100%',
-        skill: 'Master of All',
-        tagline: 'Jiu-Jitsu professor and tactical commander with infinite EP-to-HP conversion.',
-        skillDesc: 'Switches between Jiu-Jitsu (500% EP conversion rate) and Psychology (+3 EP/s) modes.',
-        stats: { Speed: 80, Healing: 99, Shield: 75, Aggression: 82 },
-        modelType: 'obj', modelPath: './models/k/k.obj',
-        objMtl: {
-          'Male_Lobby_Hair_Sc_Professor': './models/k/male_sc_foodieboy_hair_001_s.png',
-          'Male_Lobby_Head_Sc_Professor': './models/k/Male_Lobby_Head_Sc_Professor_D.png',
-          'Male_Lobby_Top_Sc_Professor': './models/k/Male_Top_Sc_Professor_D.png',
-          'Male_Lobby_Body_Sc_Professor': './models/k/Male_Body_Cos_Professor_D.png',
-          'Male_Lobby_Bottom_Sc_Professor': './models/k/Male_Bottom_Sc_Professor_D.png',
-          'Male_Lobby_Shoe_Sc_Professor': './models/k/Male_Shoe_Sc_Professor_D.png'
-        }
-      },
-      {
-        id: 'kelly', name: 'KELLY', role: 'SPEED RUSHER', color: 0xffc400, bgPos: '100% 100%',
-        skill: 'Dash / Deadly Velocity',
-        tagline: 'Track sprinter known across Bermuda for blinding flanks and first-shot crits.',
-        skillDesc: 'Boosts sprinting speed by 6% permanently; Awakened form deals 106% damage on first shot.',
-        stats: { Speed: 100, Healing: 40, Shield: 55, Aggression: 94 },
-        modelType: 'fbx', modelPath: './models/kelly/kelly.fbx',
-        fbxTex: {
-          'body': './models/kelly/body.png',
-          'bra': './models/kelly/bra.png',
-          'face': './models/kelly/face.png',
-          'hairs': './models/kelly/hairs.png',
-          'pent': './models/kelly/pent.png',
-          'shoes1': './models/kelly/shoes1.png'
-        }
-      },
-      {
-        id: 'orion', name: 'ORION', role: 'CRIMSON INVINCIBLE', color: 0xff2244, bgPos: '0% 0%',
-        skill: 'Crimson Crush',
-        tagline: 'Vengeful warrior who replaces EP with Crimson Energy to phase through lethal fire.',
-        skillDesc: 'Becomes invulnerable for 3s while absorbing 10 HP from enemies within a 5m radius.',
-        stats: { Speed: 84, Healing: 82, Shield: 96, Aggression: 96 },
-        modelType: 'obj', modelPath: './models/orion/orion.obj',
-        objMtl: {
-          'mat0': './models/orion/tex_0145_0out.png',
-          'mat0.004': './models/orion/tex_0150_0out.png',
-          'mat0.003': './models/orion/tex_0155_0out.png',
-          'mat0.002': './models/orion/tex_0160_0out.png',
-          'mat0.001': './models/orion/tex_0165_0out.png',
-          'mat0.005': './models/orion/tex_0170_0out.png'
-        }
-      },
-      {
-        id: 'tatsuya', name: 'TATSUYA', role: 'REBEL ASSAULT', color: 0xff5500, bgPos: '100% 0%',
-        skill: 'Rebel Rush',
-        tagline: 'Street-born entry fragger built for explosive double-dash close-quarters pushes.',
-        skillDesc: 'Dashes forward at extreme speed for 0.3s; stores up to 2 charges for relentless pressure.',
-        stats: { Speed: 98, Healing: 35, Shield: 58, Aggression: 99 },
-        modelType: 'obj', modelPath: './models/tatsuya/tatsuya.obj',
-        objMtl: {
-          'mat_25': './models/tatsuya/hair.png',
-          'mat_14': './models/tatsuya/body.png',
-          'mat_2': './models/tatsuya/top.png',
-          'mat_16': './models/tatsuya/bottom.png',
-          'mat_34': './models/tatsuya/shoe.png'
-        }
-      }
-    ];
-
-    // Build State 2 Cards & Right-Edge Quick Dock
+    let CHARACTERS = [];
+    let ALL_CHARACTERS = [];
     const cardsGrid = document.getElementById('cardsGrid');
     const opDock = document.getElementById('opDock');
-    CHARACTERS.forEach((c, idx) => {
-      const card = document.createElement('div');
-      card.className = 'char-card';
-      card.innerHTML = `
-        <div class="char-card-bg" style="background-position:${c.bgPos}"></div>
-        <div class="char-card-inner">
-          <div class="char-badge">
-            <span class="char-pill">${c.role}</span>
-            <span>0${idx + 1}</span>
-          </div>
-          <div>
-            <div class="char-name algerian">${c.name}</div>
-            <div class="char-skill">${c.skill}</div>
-            <span class="char-open-tag">OPEN 3D + AI CHAT ↗</span>
-          </div>
-        </div>`;
-      card.onclick = () => window.openCharacter(c.id);
-      cardsGrid.appendChild(card);
+    const s2ExpansionBar = document.getElementById('s2ExpansionBar');
 
-      const chip = document.createElement('button');
-      chip.className = 'op-chip';
-      chip.dataset.id = c.id;
-      chip.textContent = c.name;
-      chip.onclick = () => window.openCharacter(c.id);
-      opDock.appendChild(chip);
-    });
+    function renderRosterUI(catalog) {
+      ALL_CHARACTERS = catalog.characters;
+      CHARACTERS = catalog.mainCharacters;
+      cardsGrid.innerHTML = '';
+      opDock.innerHTML = '';
+      if (s2ExpansionBar) s2ExpansionBar.innerHTML = '';
+
+      CHARACTERS.forEach((c, idx) => {
+        const card = document.createElement('div');
+        card.className = 'char-card';
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `Inspect ${c.displayName} 3D character`);
+        card.innerHTML = `
+          <div class="char-card-bg" style="background-position:${c.bgPos}"></div>
+          <div class="char-card-inner">
+            <div class="char-badge">
+              <span class="char-pill">${c.role}</span>
+              <span>0${idx + 1}</span>
+            </div>
+            <div>
+              <div class="char-name algerian">${c.name}</div>
+              <div class="char-skill">${c.skill}</div>
+              <div class="char-card-actions">
+                <button type="button" class="char-open-tag" data-action="view">VIEW CHARACTER</button>
+                <button type="button" class="char-open-tag chat-cta" data-action="chat">CHAT WITH CHARACTER</button>
+              </div>
+            </div>
+          </div>`;
+        card.onclick = () => window.openCharacter(c.id, 'dossier');
+        card.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            window.openCharacter(c.id, 'dossier');
+          }
+        };
+        card.querySelector('[data-action="view"]').onclick = (e) => {
+          e.stopPropagation();
+          window.openCharacter(c.id, 'dossier');
+        };
+        card.querySelector('[data-action="chat"]').onclick = (e) => {
+          e.stopPropagation();
+          window.openCharacter(c.id, 'chat');
+        };
+        cardsGrid.appendChild(card);
+
+        const chip = document.createElement('button');
+        chip.className = 'op-chip';
+        chip.dataset.id = c.id;
+        chip.textContent = c.name;
+        chip.onclick = () => window.openCharacter(c.id, 'dossier');
+        opDock.appendChild(chip);
+      });
+
+      if (s2ExpansionBar && catalog.expansionCharacters.length > 0) {
+        const lbl = document.createElement('span');
+        lbl.className = 's2-exp-label';
+        lbl.textContent = 'Configurable Slots:';
+        s2ExpansionBar.appendChild(lbl);
+        catalog.expansionCharacters.forEach((c) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 's2-exp-chip';
+          btn.textContent = `${c.displayName} (Config)`;
+          btn.onclick = () => window.openCharacter(c.id, 'dossier');
+          s2ExpansionBar.appendChild(btn);
+        });
+      }
+    }
 
     // =========================================================================
     // 2. BEAT PLAYER + WEB AUDIO ANALYSER (FINAL BEAT.MP3)
@@ -867,172 +868,168 @@
     addEventListener('resize', resizeBg);
 
     // =========================================================================
-    // 4. 3D CHARACTER VAULT VIEWER (REAL OBJ & FBX MODELS + ORBITCONTROLS)
+    // 4. 3D CHARACTER VAULT VIEWER + SIGNATURE ABILITY VFX
     // =========================================================================
     const vaultModal = document.getElementById('vaultModal');
+    const vaultStage = document.getElementById('vaultStage');
     const vaultLoader = document.getElementById('vaultLoader');
     const vaultLoadMsg = document.getElementById('vaultLoadMsg');
+    const vaultFallback = document.getElementById('vaultFallback');
     const charCanvas = document.getElementById('char3dCanvas');
 
-    const vRenderer = new THREE.WebGLRenderer({ canvas: charCanvas, antialias: true, alpha: true });
-    vRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    vRenderer.outputColorSpace = THREE.SRGBColorSpace;
-    const vScene = new THREE.Scene();
-    const vCam = new THREE.PerspectiveCamera(40, 1.4, 0.1, 100);
-    vCam.position.set(0, 1.35, 3.6);
+    const btnActivateSkill = document.getElementById('btnActivateSkill');
+    const abilityCountdown = document.getElementById('abilityCountdown');
+    const countdownCircle = document.getElementById('countdownCircle');
+    const countdownText = document.getElementById('countdownText');
+    const abilityHudTitle = document.getElementById('abilityHudTitle');
+    const abilityHudLines = document.getElementById('abilityHudLines');
+    const kModeSwitcher = document.getElementById('kModeSwitcher');
 
-    const vControls = new OrbitControls(vCam, charCanvas);
-    vControls.enableDamping = true;
-    vControls.target.set(0, 1.0, 0);
+    const vault3d = new CharacterVault3D({
+      canvas: charCanvas,
+      stageEl: vaultStage,
+      loaderEl: vaultLoader,
+      loadMsgEl: vaultLoadMsg,
+      fallbackEl: vaultFallback,
+    });
 
-    const keyLight = new THREE.DirectionalLight(0xfff1e0, 2.4);
-    keyLight.position.set(3, 5, 4);
-    const rimLight = new THREE.DirectionalLight(0xff6b00, 2.0);
-    rimLight.position.set(-4, 3, -3);
-    const ambLight = new THREE.AmbientLight(0xffffff, 0.9);
-    vScene.add(keyLight, rimLight, ambLight);
+    let activeCharIdx = 0;
 
-    const pedRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.95, 0.035, 8, 48),
-      new THREE.MeshBasicMaterial({ color: 0xff6b00 })
-    );
-    pedRing.rotation.x = Math.PI / 2;
-    vScene.add(pedRing);
-
-    const gridHelper = new THREE.GridHelper(6, 16, 0xff6b00, 0x332822);
-    vScene.add(gridHelper);
-
-    let activeModel = null, activeCharIdx = 0, autoSpin = true, wireMode = false, studioLight = false;
-    const modelCache = new Map();
-    const texLoader = new THREE.TextureLoader();
-
-    function normalizeModel(obj) {
-      const box = new THREE.Box3().setFromObject(obj);
-      const size = box.getSize(new THREE.Vector3());
-      const center = box.getCenter(new THREE.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z) || 1;
-      const scale = 2.05 / maxDim;
-      obj.scale.setScalar(scale);
-      obj.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
-      return obj;
-    }
-
-    async function loadCharacter3D(char) {
-      vaultLoader.classList.remove('hidden');
-      vaultLoadMsg.textContent = `LOADING ${char.name} (${char.modelType.toUpperCase()})...`;
-
-      if (activeModel) { vScene.remove(activeModel); activeModel = null; }
-      pedRing.material.color.setHex(char.color);
-      rimLight.color.setHex(char.color);
-      coreMat.color.setHex(char.color);
-
-      if (modelCache.has(char.id)) {
-        activeModel = modelCache.get(char.id);
-        vScene.add(activeModel);
-        applyWireframe();
-        vaultLoader.classList.add('hidden');
-        return;
-      }
-
-      try {
-        let root;
-        if (char.modelType === 'fbx') {
-          const mgr = new THREE.LoadingManager();
-          mgr.setURLModifier((url) => {
-            const base = url.split(/[\\/]/).pop().replace(/\.[^.]+$/, '').toLowerCase();
-            return char.fbxTex[base] || url;
-          });
-          const fbxLoader = new FBXLoader(mgr);
-          root = await fbxLoader.loadAsync(char.modelPath);
-          root.traverse((ch) => {
-            if (ch.isMesh) {
-              const mats = Array.isArray(ch.material) ? ch.material : [ch.material];
-              mats.forEach((m) => { if (m) m.side = THREE.DoubleSide; });
-            }
-          });
-        } else {
-          const objLoader = new OBJLoader();
-          root = await objLoader.loadAsync(char.modelPath);
-          const loadedTex = {};
-          for (const [mtlName, texUrl] of Object.entries(char.objMtl)) {
-            const t = texLoader.load(texUrl);
-            t.colorSpace = THREE.SRGBColorSpace;
-            loadedTex[mtlName] = t;
-          }
-          root.traverse((ch) => {
-            if (ch.isMesh) {
-              const mats = Array.isArray(ch.material) ? ch.material : [ch.material];
-              const mapped = mats.map((m) => {
-                const tex = loadedTex[m?.name] || Object.values(loadedTex)[0];
-                return new THREE.MeshStandardMaterial({
-                  map: tex, roughness: 0.55, metalness: 0.15, side: THREE.DoubleSide
-                });
-              });
-              ch.material = mapped.length === 1 ? mapped[0] : mapped;
-            }
+    if (vault3d.vfx) {
+      vault3d.vfx.onStateChange = ({ isActive, remaining, duration, progress, kMode }) => {
+        btnActivateSkill.classList.toggle('active', isActive);
+        btnActivateSkill.textContent = isActive ? '■ STOP ABILITY' : '⚡ ACTIVATE ABILITY';
+        abilityCountdown.hidden = !isActive;
+        if (isActive) {
+          const circumference = 94.25;
+          countdownCircle.style.strokeDashoffset = String(circumference * progress);
+          countdownText.textContent = `${remaining.toFixed(1)}s`;
+        }
+        if (kModeSwitcher && !kModeSwitcher.hidden) {
+          kModeSwitcher.querySelectorAll('.k-mode-btn').forEach((btn) => {
+            btn.classList.toggle('active', btn.dataset.kmode === kMode);
           });
         }
-        normalizeModel(root);
-        modelCache.set(char.id, root);
-        activeModel = root;
-        vScene.add(activeModel);
-        applyWireframe();
-        vaultLoader.classList.add('hidden');
-      } catch (err) {
-        vaultLoadMsg.textContent = `RUN VIA LIVE SERVER TO LOAD ${char.modelPath}`;
-        console.error(err);
-      }
+      };
     }
 
-    function applyWireframe() {
-      if (!activeModel) return;
-      activeModel.traverse((c) => {
-        if (c.isMesh) {
-          const mats = Array.isArray(c.material) ? c.material : [c.material];
-          mats.forEach((m) => { if (m) m.wireframe = wireMode; });
-        }
+    btnActivateSkill.onclick = () => {
+      if (vault3d.vfx) vault3d.vfx.toggle();
+    };
+
+    if (kModeSwitcher) {
+      kModeSwitcher.querySelectorAll('.k-mode-btn').forEach((btn) => {
+        btn.onclick = () => {
+          if (vault3d.vfx) vault3d.vfx.setKMode(btn.dataset.kmode);
+        };
       });
     }
 
-    function resizeVault() {
-      const box = charCanvas.parentElement.getBoundingClientRect();
-      if (!box.width || !box.height) return;
-      vRenderer.setSize(box.width, box.height);
-      vCam.aspect = box.width / box.height;
-      vCam.updateProjectionMatrix();
-    }
+    const tabDossier = document.getElementById('tabDossier');
+    const tabChat = document.getElementById('tabChat');
+    const dossierPanel = document.getElementById('dossierPanel');
+    const chatPanel = document.getElementById('chatPanel');
 
-    window.openCharacter = (id) => {
-      activeCharIdx = Math.max(0, CHARACTERS.findIndex((c) => c.id === id));
-      const c = CHARACTERS[activeCharIdx];
+    function switchVaultTab(mode) {
+      const isChat = mode === 'chat';
+      tabChat.classList.toggle('active', isChat);
+      tabDossier.classList.toggle('active', !isChat);
+      chatPanel.classList.toggle('active', isChat);
+      dossierPanel.classList.toggle('hidden', isChat);
+    }
+    tabDossier.onclick = () => switchVaultTab('dossier');
+    tabChat.onclick = () => switchVaultTab('chat');
+
+    const aiChat = new CharacterAIChat({
+      messagesEl: document.getElementById('chatMessages'),
+      promptsEl: document.getElementById('chatPrompts'),
+      formEl: document.getElementById('chatForm'),
+      inputEl: document.getElementById('chatInput'),
+      sendBtnEl: document.getElementById('chatSendBtn'),
+      stopBtnEl: document.getElementById('chatStopBtn'),
+      statusBadgeEl: document.getElementById('chatStatusBadge'),
+      clearBtnEl: document.getElementById('clearChatBtn'),
+      newChatBtnEl: document.getElementById('newChatBtn'),
+      persistToggleEl: document.getElementById('persistChatToggle'),
+      privacyBtnEl: document.getElementById('privacyInfoBtn'),
+      privacyModalEl: document.getElementById('privacyModal'),
+      privacyCloseEl: document.getElementById('privacyCloseBtn'),
+      deleteAllBtnEl: document.getElementById('deleteAllDataBtn'),
+      onSpeakingChange: (speaking) => vault3d.setSpeaking(speaking),
+    });
+
+    window.openCharacter = (id, initialTab = 'dossier') => {
+      if (!ALL_CHARACTERS.length) return;
+      const idx = ALL_CHARACTERS.findIndex((c) => c.id === id);
+      activeCharIdx = idx >= 0 ? idx : 0;
+      const c = ALL_CHARACTERS[activeCharIdx];
+
+      coreMat.color.setHex(c.color);
+      vaultStage.style.setProperty('--hud-accent', c.accentHex || '#FF6B00');
+
       document.getElementById('vRole').textContent = c.role;
       document.getElementById('vName').textContent = c.name;
       document.getElementById('vTagline').textContent = c.tagline;
+      document.getElementById('vBio').textContent = c.biography || '';
+      document.getElementById('vSkillType').textContent = (c.abilities?.abilityType || 'SIGNATURE ABILITY').toUpperCase();
       document.getElementById('vSkill').textContent = c.skill;
       document.getElementById('vSkillDesc').textContent = c.skillDesc;
-      document.getElementById('vStats').innerHTML = Object.entries(c.stats).map(([k, v]) => `
+      document.getElementById('vPatchNote').textContent = c.abilities?.verifiedPatchNote ? `Verified Note: ${c.abilities.verifiedPatchNote}` : '';
+      document.getElementById('vStats').innerHTML = Object.entries(c.stats || {}).map(([k, v]) => `
         <div class="stat-row">
           <div class="stat-head"><span>${k}</span><span>${v}/100</span></div>
           <div class="stat-track"><div class="stat-fill" style="width:${v}%"></div></div>
         </div>`).join('');
+
+      abilityHudTitle.textContent = (c.skill || 'ABILITY').toUpperCase();
+      const lines = c.abilities?.statsDisplay || [c.skill];
+      abilityHudLines.innerHTML = lines.map((line) => `<span>${line}</span>`).join('');
+      if (kModeSwitcher) kModeSwitcher.hidden = c.id !== 'k';
+
       document.querySelectorAll('.op-chip').forEach((el) => el.classList.toggle('active', el.dataset.id === c.id));
       vaultModal.classList.add('open');
-      resizeVault();
-      loadCharacter3D(c);
-      renderChatMessages();
+      switchVaultTab(initialTab);
+      vault3d.resize();
+      vault3d.loadCharacter(c);
+      aiChat.setCharacter(c);
     };
 
-    document.getElementById('vaultClose').onclick = () => vaultModal.classList.remove('open');
-    document.getElementById('vPrev').onclick = () => window.openCharacter(CHARACTERS[(activeCharIdx + CHARACTERS.length - 1) % CHARACTERS.length].id);
-    document.getElementById('vNext').onclick = () => window.openCharacter(CHARACTERS[(activeCharIdx + 1) % CHARACTERS.length].id);
-    document.getElementById('btnSpin').onclick = (e) => { autoSpin = !autoSpin; e.target.textContent = `Auto-Spin: ${autoSpin ? 'ON' : 'OFF'}`; e.target.classList.toggle('on', autoSpin); };
-    document.getElementById('btnWire').onclick = (e) => { wireMode = !wireMode; e.target.textContent = `Wireframe: ${wireMode ? 'ON' : 'OFF'}`; e.target.classList.toggle('on', wireMode); applyWireframe(); };
-    document.getElementById('btnLight').onclick = (e) => {
-      studioLight = !studioLight;
-      ambLight.intensity = studioLight ? 1.8 : 0.9;
-      e.target.textContent = `Light: ${studioLight ? 'Studio' : 'Foundry'}`;
+    addEventListener('resize', () => {
+      if (vaultModal.classList.contains('open')) vault3d.resize();
+    });
+
+    document.getElementById('vaultClose').onclick = () => {
+      vault3d.vfx?.deactivate();
+      vaultModal.classList.remove('open');
     };
-    document.getElementById('btnReset').onclick = () => { vCam.position.set(0, 1.35, 3.6); vControls.target.set(0, 1.0, 0); };
+    document.getElementById('vPrev').onclick = () => {
+      const list = CHARACTERS.length ? CHARACTERS : ALL_CHARACTERS;
+      const cur = Math.max(0, list.findIndex((x) => x.id === ALL_CHARACTERS[activeCharIdx]?.id));
+      window.openCharacter(list[(cur + list.length - 1) % list.length].id);
+    };
+    document.getElementById('vNext').onclick = () => {
+      const list = CHARACTERS.length ? CHARACTERS : ALL_CHARACTERS;
+      const cur = Math.max(0, list.findIndex((x) => x.id === ALL_CHARACTERS[activeCharIdx]?.id));
+      window.openCharacter(list[(cur + 1) % list.length].id);
+    };
+    document.getElementById('btnSpin').onclick = (e) => {
+      const next = !vault3d.autoSpin;
+      vault3d.setAutoSpin(next);
+      e.target.textContent = `Auto-Spin: ${next ? 'ON' : 'OFF'}`;
+      e.target.classList.toggle('on', next);
+    };
+    document.getElementById('btnWire').onclick = (e) => {
+      const next = !vault3d.wireMode;
+      vault3d.setWireframe(next);
+      e.target.textContent = `Wireframe: ${next ? 'ON' : 'OFF'}`;
+      e.target.classList.toggle('on', next);
+    };
+    document.getElementById('btnLight').onclick = (e) => {
+      const next = !vault3d.studioLight;
+      vault3d.setStudioLight(next);
+      e.target.textContent = `Light: ${next ? 'Studio' : 'Foundry'}`;
+    };
+    document.getElementById('btnReset').onclick = () => vault3d.resetCamera();
 
     // =========================================================================
     // 5. EMBERS FOUNDRY RUNTIME: MOUNDS CLEANUP, CAMERA TRANSITION & LOAD TIMINGS
@@ -1124,120 +1121,33 @@
     }, { passive: true });
 
     addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { vaultModal.classList.remove('open'); return; }
+      if (e.key === 'Escape') {
+        const privacyModal = document.getElementById('privacyModal');
+        if (privacyModal && !privacyModal.hidden) { privacyModal.hidden = true; return; }
+        vault3d.vfx?.deactivate();
+        vaultModal.classList.remove('open');
+        return;
+      }
       if (vaultModal.classList.contains('open')) return;
       if (e.key === 'ArrowDown' || e.key === ' ') window.goState(window.currentState === 0 ? 1 : 0);
       if (e.key === 'ArrowUp') window.goState(0);
     });
 
-    // =========================================================================
-    // 6. PER-CHARACTER AI CHATBOT (GEMINI + OPENAI AUTO-DETECT)
-    // =========================================================================
-    const DEFAULT_API_KEY = ""; // Optional: paste your API key between quotes
-    const chatHistory = {};
-
-    const tabDossier = document.getElementById('tabDossier');
-    const tabChat = document.getElementById('tabChat');
-    const dossierPanel = document.getElementById('dossierPanel');
-    const chatPanel = document.getElementById('chatPanel');
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const chatForm = document.getElementById('chatForm');
-
-    apiKeyInput.value = localStorage.getItem('ff_ai_api_key') || DEFAULT_API_KEY;
-    document.getElementById('saveKeyBtn').onclick = () => {
-      localStorage.setItem('ff_ai_api_key', apiKeyInput.value.trim());
-      alert('API Key saved!');
-    };
-
-    function switchVaultTab(mode) {
-      const isChat = mode === 'chat';
-      tabChat.classList.toggle('active', isChat);
-      tabDossier.classList.toggle('active', !isChat);
-      chatPanel.classList.toggle('active', isChat);
-      dossierPanel.classList.toggle('hidden', isChat);
-      if (isChat) renderChatMessages();
-    }
-    tabDossier.onclick = () => switchVaultTab('dossier');
-    tabChat.onclick = () => switchVaultTab('chat');
-
-    function renderChatMessages() {
-      const char = CHARACTERS[activeCharIdx];
-      if (!chatHistory[char.id]) {
-        chatHistory[char.id] = [{
-          role: 'bot',
-          text: `Yo! I'm ${char.name}. Ask me anything about my ${char.skill} ability, Free Fire combos, or anything else!`
-        }];
-      }
-      chatMessages.innerHTML = chatHistory[char.id].map((m) =>
-        `<div class="chat-msg ${m.role}">${m.text.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>`
-      ).join('');
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    async function askCharacterAI(char, userText, apiKey) {
-      const systemPrompt = `You are ${char.name} from Garena Free Fire. Role: ${char.role}. Signature skill: ${char.skill} (${char.skillDesc}). Stay in character with a bold, energetic tone, answer any question the user asks clearly and concisely (2-4 sentences).`;
-
-      if (apiKey.startsWith('sk-')) {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userText }
-            ]
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || 'OpenAI API error');
-        return data.choices[0].message.content;
-      } else {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: [{ role: 'user', parts: [{ text: userText }] }]
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || 'Gemini API error');
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
-      }
-    }
-
-    chatForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const text = chatInput.value.trim();
-      const apiKey = (apiKeyInput.value || DEFAULT_API_KEY).trim();
-      if (!text) return;
-      if (!apiKey) {
-        alert('Please paste your API key in the top box first!');
-        return;
-      }
-
-      const char = CHARACTERS[activeCharIdx];
-      chatHistory[char.id].push({ role: 'user', text });
-      chatHistory[char.id].push({ role: 'bot', text: 'Typing...' });
-      chatInput.value = '';
-      renderChatMessages();
-
-      try {
-        const reply = await askCharacterAI(char, text, apiKey);
-        chatHistory[char.id][chatHistory[char.id].length - 1].text = reply;
-      } catch (err) {
-        chatHistory[char.id][chatHistory[char.id].length - 1].text = `Error: ${err.message}`;
-      }
-      renderChatMessages();
-    };
+    // Initialize character catalog from /characters/registry.json
+    loadCharacterCatalog()
+      .then((catalog) => renderRosterUI(catalog))
+      .catch((err) => {
+        console.error('Character catalog load error:', err);
+        cardsGrid.innerHTML = `<div style="padding:16px;border:2px solid var(--ff-orange);background:#000;color:var(--light);font-size:12px;">Unable to load character configs. Serve this folder via Python server.py or Live Server.</div>`;
+      });
 
     // Main Render Loop (Background 3D + Vault 3D + Beat Visualizer)
-    function animate() {
+    let lastTs = performance.now();
+    function animate(now = performance.now()) {
       requestAnimationFrame(animate);
+      const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) / 1000));
+      lastTs = now;
+
       updateBeatVisualizer();
 
       const pulse = 1 + beatBass * 0.28;
@@ -1258,10 +1168,7 @@
       bgRenderer.render(bgScene, bgCam);
 
       if (vaultModal.classList.contains('open')) {
-        if (activeModel && autoSpin) activeModel.rotation.y += 0.008 + beatBass * 0.015;
-        pedRing.scale.setScalar(1 + beatBass * 0.16);
-        vControls.update();
-        vRenderer.render(vScene, vCam);
+        vault3d.renderFrame(dt, beatBass);
       }
     }
     animate();
