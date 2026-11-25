@@ -709,7 +709,7 @@
         chip.className = 'op-chip';
         chip.dataset.id = c.id;
         chip.textContent = c.name;
-        chip.onclick = () => window.openCharacter(c.id, 'dossier');
+        chip.onclick = () => window.openCharacter(c.id, 'dossier', c.id === 'kelly');
         opDock.appendChild(chip);
       });
 
@@ -897,8 +897,11 @@
 
     if (vault3d.vfx) {
       vault3d.vfx.onStateChange = ({ isActive, remaining, duration, progress, kMode }) => {
+        const isKelly = ALL_CHARACTERS[activeCharIdx]?.id === 'kelly';
         btnActivateSkill.classList.toggle('active', isActive);
-        btnActivateSkill.textContent = isActive ? '■ STOP ABILITY' : '⚡ ACTIVATE ABILITY';
+        btnActivateSkill.textContent = isKelly
+          ? (isActive ? '■ STOP RUNNING' : '🏃 RUN / DEADLY VELOCITY')
+          : (isActive ? '■ STOP ABILITY' : '⚡ ACTIVATE ABILITY');
         abilityCountdown.hidden = !isActive;
         if (isActive) {
           const circumference = 94.25;
@@ -958,7 +961,7 @@
       onSpeakingChange: (speaking) => vault3d.setSpeaking(speaking),
     });
 
-    window.openCharacter = (id, initialTab = 'dossier') => {
+    window.openCharacter = (id, initialTab = 'dossier', autoActivate = false) => {
       if (!ALL_CHARACTERS.length) return;
       const idx = ALL_CHARACTERS.findIndex((c) => c.id === id);
       activeCharIdx = idx >= 0 ? idx : 0;
@@ -985,12 +988,17 @@
       const lines = c.abilities?.statsDisplay || [c.skill];
       abilityHudLines.innerHTML = lines.map((line) => `<span>${line}</span>`).join('');
       if (kModeSwitcher) kModeSwitcher.hidden = c.id !== 'k';
+      btnActivateSkill.textContent = c.id === 'kelly' ? '🏃 RUN / DEADLY VELOCITY' : '⚡ ACTIVATE ABILITY';
 
       document.querySelectorAll('.op-chip').forEach((el) => el.classList.toggle('active', el.dataset.id === c.id));
       vaultModal.classList.add('open');
       switchVaultTab(initialTab);
       vault3d.resize();
-      vault3d.loadCharacter(c);
+      vault3d.loadCharacter(c).then(() => {
+        if (autoActivate && ALL_CHARACTERS[activeCharIdx]?.id === c.id) {
+          vault3d.vfx?.activate(c.id === 'kelly' ? 60 : undefined);
+        }
+      });
       aiChat.setCharacter(c);
     };
 

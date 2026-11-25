@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { AbilityVFXManager } from './ability-vfx.js';
+import { loadKellyRiggedModel, updateKellyAnimation } from './kelly-rig.js';
 
 /**
  * 3D Character Vault Renderer with:
@@ -202,15 +203,19 @@ export class CharacterVault3D {
 
     try {
       let root;
-      if (char.modelType === 'placeholder' || !char.modelPath) {
-        root = this._createPlaceholderModel(char.color || 0xa855f7);
-      } else if (char.modelType === 'fbx') {
-        root = await this._loadFBX(char);
+      if (char.id === 'kelly') {
+        root = await loadKellyRiggedModel(char, this.texLoader);
       } else {
-        root = await this._loadOBJ(char);
+        if (char.modelType === 'placeholder' || !char.modelPath) {
+          root = this._createPlaceholderModel(char.color || 0xa855f7);
+        } else if (char.modelType === 'fbx') {
+          root = await this._loadFBX(char);
+        } else {
+          root = await this._loadOBJ(char);
+        }
+        this._normalizeModel(root, char.scaleTarget || 2.05);
       }
 
-      this._normalizeModel(root, char.scaleTarget || 2.05);
       this.modelCache.set(char.id, root);
       this.activeModel = root;
       this.baseModelY = root.userData.baseY || 0;
@@ -369,40 +374,47 @@ export class CharacterVault3D {
       const abilityOn = this.vfx.isActive;
       const motion = this.reducedMotion ? 0.15 : 1.0;
 
-      // Subtle breathing + speaking micro-gestures
-      const breath = Math.sin(t * 2.1) * 0.008 * motion;
-      const speakBob = this.isSpeaking ? Math.sin(t * 7.5) * 0.012 * motion : 0;
+      if (this.activeChar?.id === 'kelly' && this.activeModel.userData.kellyRig) {
+        updateKellyAnimation(this.activeModel, dt, {
+          isRunning: abilityOn,
+          isSpeaking: this.isSpeaking,
+          beatBass,
+          reducedMotion: this.reducedMotion,
+        });
+        if (this.autoSpin && !this.reducedMotion) {
+          this.activeModel.rotation.y += dt * (abilityOn ? 0.25 : 0.45) + beatBass * 0.01;
+        }
+      } else {
+        // Subtle breathing + speaking micro-gestures
+        const breath = Math.sin(t * 2.1) * 0.008 * motion;
+        const speakBob = this.isSpeaking ? Math.sin(t * 7.5) * 0.012 * motion : 0;
 
-      let extraY = 0;
-      let leanX = 0;
-      let swayZ = Math.sin(t * 1.15) * 0.016 * motion;
+        let extraY = 0;
+        let leanX = 0;
+        let swayZ = Math.sin(t * 1.15) * 0.016 * motion;
 
-      if (profile === 'athletic_sprint' && abilityOn) {
-        // Kelly sprint pulse + forward lean
-        extraY = Math.abs(Math.sin(t * 11)) * 0.045 * motion;
-        leanX = 0.13 * motion;
-        swayZ = Math.sin(t * 5.5) * 0.04 * motion;
-      } else if (profile === 'music_groove') {
-        // Alok beat bounce
-        const groove = abilityOn ? 0.032 : 0.012;
-        extraY = Math.abs(Math.sin(t * 4.6)) * groove * motion + beatBass * 0.035;
-        swayZ = Math.sin(t * 2.3) * (abilityOn ? 0.04 : 0.018) * motion;
-      } else if (profile === 'crimson_surge' && abilityOn) {
-        // Orion slight hover during Crimson Crush
-        extraY = (0.1 + Math.sin(t * 3.5) * 0.03) * motion;
-      } else if (profile === 'tactical_hover' && abilityOn) {
-        extraY = Math.sin(t * 2.6) * 0.025 * motion;
-      } else if (profile === 'rebel_dash' && abilityOn) {
-        leanX = 0.14 * motion;
-        extraY = Math.abs(Math.sin(t * 9)) * 0.035 * motion;
-      }
+        if (profile === 'music_groove') {
+          // Alok beat bounce
+          const groove = abilityOn ? 0.032 : 0.012;
+          extraY = Math.abs(Math.sin(t * 4.6)) * groove * motion + beatBass * 0.035;
+          swayZ = Math.sin(t * 2.3) * (abilityOn ? 0.04 : 0.018) * motion;
+        } else if (profile === 'crimson_surge' && abilityOn) {
+          // Orion slight hover during Crimson Crush
+          extraY = (0.1 + Math.sin(t * 3.5) * 0.03) * motion;
+        } else if (profile === 'tactical_hover' && abilityOn) {
+          extraY = Math.sin(t * 2.6) * 0.025 * motion;
+        } else if (profile === 'rebel_dash' && abilityOn) {
+          leanX = 0.14 * motion;
+          extraY = Math.abs(Math.sin(t * 9)) * 0.035 * motion;
+        }
 
-      this.activeModel.position.y = this.baseModelY + breath + speakBob + extraY;
-      this.activeModel.rotation.x += (leanX - this.activeModel.rotation.x) * Math.min(1, dt * 6);
-      this.activeModel.rotation.z = swayZ;
+        this.activeModel.position.y = this.baseModelY + breath + speakBob + extraY;
+        this.activeModel.rotation.x += (leanX - this.activeModel.rotation.x) * Math.min(1, dt * 6);
+        this.activeModel.rotation.z = swayZ;
 
-      if (this.autoSpin && !this.reducedMotion) {
-        this.activeModel.rotation.y += dt * 0.45 + beatBass * 0.015;
+        if (this.autoSpin && !this.reducedMotion) {
+          this.activeModel.rotation.y += dt * 0.45 + beatBass * 0.015;
+        }
       }
     }
 

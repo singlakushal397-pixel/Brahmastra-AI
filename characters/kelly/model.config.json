@@ -11,17 +11,17 @@
     "shoes1": "./models/kelly/shoes1.png"
   },
   "scaleTarget": 2.05,
-  "cameraOffset": [0, 1.35, 3.65],
+  "cameraOffset": [0.55, 1.15, 3.75],
   "cameraTarget": [0, 1.0, 0],
   "animationProfile": "athletic_sprint",
   "vfxProfile": "deadly_velocity_trails",
-  "visualIdentityNotes": "Yellow jacket & track pants with black accents, black crop top, yellow-black sneakers, black hair with red-tinted tips.",
+  "visualIdentityNotes": "Yellow jacket with black X & star trim, black inner crop top, yellow-black asymmetric track pants, thigh utility pouch, black choker, yellow-black sneakers, short black bob with red tips.",
   "environmentTheme": {
     "label": "Velocity Track Arena",
     "primaryHex": "#FFD000",
     "glowHex": "#FFC400",
-    "bgTop": "#2b2307",
-    "bgBottom": "#0c0b08",
-    "rimColor": "0xffd000"
+    "bgTop": "#312308",
+    "bgBottom": "#110908",
+    "rimColor": "0xff3322"
   }
 }
