@@ -512,7 +512,11 @@
 
     <!-- 9. Operator Quick Dock -->
     <div class="op-dock" id="opDock"></div>
-    <audio id="bgBeatAudio" src="./audio/Final beat.mp3" autoplay loop preload="auto" playsinline></audio>
+    <audio id="bgBeatAudio" src="./audio/Final beat.mp3" loop preload="metadata" playsinline></audio>
+    <div class="bg-audio-pill" id="bgAudioPill" role="region" aria-label="Background music controls">
+      <button type="button" class="bg-audio-btn" id="bgAudioToggle" aria-label="Play or pause background music">♪ ENABLE SOUND</button>
+      <button type="button" class="bg-audio-mute" id="bgAudioMute" aria-label="Mute or unmute background music" title="Mute / Unmute">🔊</button>
+    </div>
   </main>
 
   <!-- 11. 3D Character Vault & AI Chat Modal -->
@@ -723,7 +727,11 @@
     // 2. BACKGROUND BEAT PLAYER + WEB AUDIO ANALYSER (FINAL BEAT.MP3)
     // =========================================================================
     let beatBass = 0;
-    const beatController = initBackgroundBeat(document.getElementById('bgBeatAudio'));
+    const beatController = initBackgroundBeat(document.getElementById('bgBeatAudio'), {
+      pillEl: document.getElementById('bgAudioPill'),
+      toggleBtnEl: document.getElementById('bgAudioToggle'),
+      muteBtnEl: document.getElementById('bgAudioMute'),
+    });
 
     function updateBeatVisualizer() {
       beatBass = beatController.updateFrame();

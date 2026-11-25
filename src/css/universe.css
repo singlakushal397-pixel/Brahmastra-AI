@@ -226,6 +226,55 @@
   text-transform: uppercase;
 }
 
+/* Minimal Neo-Brutalist Background Music Pill (Top-Right next to Menu) */
+.bg-audio-pill {
+  position: fixed;
+  top: max(18px, calc(24 * var(--u)));
+  right: max(68px, calc(86 * var(--u)));
+  z-index: 26;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(18, 17, 16, 0.92);
+  border: 2px solid var(--light);
+  box-shadow: 4px 4px 0 #000;
+}
+
+.bg-audio-btn {
+  background: transparent;
+  border: none;
+  color: var(--light);
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bg-audio-btn.needs-unlock {
+  background: var(--ff-orange);
+  color: #000;
+}
+
+.bg-audio-btn:hover {
+  background: var(--ff-gold);
+  color: #000;
+}
+
+.bg-audio-mute {
+  background: transparent;
+  border: none;
+  border-left: 1.5px solid rgba(237, 227, 218, 0.35);
+  color: var(--light);
+  padding: 5px 8px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.bg-audio-mute:hover {
+  background: var(--light);
+  color: #000;
+}
+
 /* WebGL / Asset Fallback Card */
 .vault-fallback {
   position: absolute;
@@ -616,6 +665,22 @@ input:focus-visible {
 
   .beat-viz {
     display: none;
+  }
+
+  .bg-audio-pill {
+    top: 6px;
+    right: 52px;
+  }
+
+  .bg-audio-btn {
+    padding: 5px 8px;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+
+  .bg-audio-mute {
+    padding: 4px 7px;
+    font-size: 10px;
   }
 }
 
