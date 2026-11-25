@@ -1,11 +1,8 @@
 /**
  * Single-Instance Persistent Background Music Controller for Final beat.mp3.
- * - Attempts automatic playback from 0:00 on new website sessions.
- * - Gracefully handles Chrome/Safari/mobile autoplay restrictions via a minimal
- *   "Enable Sound" pill without errors or duplicate audio instances.
- * - Respects explicit visitor pause/mute preferences via sessionStorage.
- * - Feeds real-time beatBass to 3D Ember Core and character visuals without
- *   interrupting playback during internal navigation.
+ * - Attempts automatic playback from 0:00 on new website sessions without any UI buttons.
+ * - Unlocks smoothly on the first visitor interaction if browser autoplay blocks initial sound.
+ * - Feeds real-time beatBass to 3D visuals without interrupting internal navigation.
  */
 
 const PREF_KEY = 'ff_bg_audio_pref_v1';
